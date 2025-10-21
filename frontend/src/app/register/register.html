@@ -1,13 +1,34 @@
 <form (ngSubmit)="onRegister()" #registerForm="ngForm">
   <h2>Create an Account</h2>
+  
   <label>Full Name</label>
   <input type="text" name="name" [(ngModel)]="registerData.name" required>
 
+  <label>Username</label>
+  <div class="username-container">
+    <input type="text" name="username" [(ngModel)]="registerData.username" required>
+    <button type="button" class="check-btn" (click)="checkUsername()">Check</button>
+  </div>
+   <!-- <div class="username-status">{{usernameStatus}}</div> -->
+  
   <label>Email</label>
   <input type="email" name="email" [(ngModel)]="registerData.email" required>
 
+
+  <label>Gender</label>
+  <select name="gender" [(ngModel)]="registerData.gender" required>
+    <option value="">Select Gender</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+    <option value="Other">Other</option>
+  </select>
+
+
   <label>Password</label>
   <input type="password" name="password" [(ngModel)]="registerData.password" required>
+
+  <label>Confirm Password</label>
+  <input type="password" name="confirmPassword" [(ngModel)]="registerData.confirmPassword" required>
 
   <button type="submit">Register</button>
   <p>

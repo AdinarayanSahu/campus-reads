@@ -42,25 +42,7 @@ input {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-select {
-  width: 100%;
-  margin: 0 0 20px 0;
-  padding: 10px 12px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  background-color: white;
-  cursor: pointer;
-}
-
 input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-}
-
-select:focus {
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
@@ -102,49 +84,6 @@ a {
 
 a:hover {
   text-decoration: underline;
-}
-
-.username-container {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.username-container input {
-  flex: 1;
-  margin-bottom: 0;
-}
-
-.check-btn {
-  width: auto;
-  background: #10b981;
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-  white-space: nowrap;
-  margin: 0;
-}
-
-.check-btn:hover {
-  background: #059669;
-}
-
-.username-status {
-  font-size: 13px;
-  margin-bottom: 15px;
-  padding: 5px 0;
-  font-weight: 500;
-  min-height: 18px;
-  color: #2563eb;
-}
-.username-status.empty {
-  color: transparent;
 }
 
 @media (max-width: 480px) {
