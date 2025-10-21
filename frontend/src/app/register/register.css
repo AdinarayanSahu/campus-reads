@@ -104,6 +104,26 @@ a:hover {
   text-decoration: underline;
 }
 
+.success-msg {
+  background: #d4edda;
+  color: #155724;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #c3e6cb;
+  text-align: center;
+  font-size: 14px;
+}
+
+.error-msg {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #f5c6cb;
+  text-align: center;
+  font-size: 14px;
+}
+
 .username-container {
   display: flex;
   gap: 10px;

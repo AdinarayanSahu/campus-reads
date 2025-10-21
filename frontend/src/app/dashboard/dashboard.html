@@ -1,0 +1,83 @@
+<div class="dashboard-container">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <h2>Campus Reads</h2>
+    </div>
+    <div class="navbar-menu">
+      <span class="user-info">Welcome, {{ user?.name }}</span>
+      <button class="logout-btn" (click)="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="dashboard-content">
+    <div class="sidebar">
+      <ul class="menu">
+        <li class="menu-item active">
+          <img class="icon" src="assets/icons/dashboard.png" alt="Dashboard" />
+          <span>Dashboard</span>
+        </li>
+        <li class="menu-item">
+          <img class="icon" src="assets/icons/books.png" alt="Books" />
+          <span>Browse Books</span>
+        </li>
+        <li class="menu-item">
+          <img class="icon" src="assets/icons/mybooks.png" alt="My Books" />
+          <span>My Books</span>
+        </li>
+        <li class="menu-item">
+          <img class="icon" src="assets/icons/profile.png" alt="Profile" />
+          <span>Profile</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="main-content">
+      <div class="welcome-section">
+        <h1>Welcome to Campus Reads</h1>
+        <p>Your digital library management system</p>
+      </div>
+
+      <div class="user-profile-card">
+        <h3>User Information</h3>
+        <div class="profile-info">
+          <div class="info-item">
+            <span class="label">Name:</span>
+            <span class="value">{{ user?.name }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Email:</span>
+            <span class="value">{{ user?.email }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Gender:</span>
+            <span class="value">{{ user?.gender }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-section">
+        <div class="stat-card">
+          <img class="stat-icon" src="assets/icons/books.png" alt="Books Borrowed" />
+          <div class="stat-details">
+            <h4>Books Borrowed</h4>
+            <p class="stat-number">0</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <img class="stat-icon" src="assets/icons/check.png" alt="Books Returned" />
+          <div class="stat-details">
+            <h4>Books Returned</h4>
+            <p class="stat-number">0</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <img class="stat-icon" src="assets/icons/pending.png" alt="Pending Returns" />
+          <div class="stat-details">
+            <h4>Pending Returns</h4>
+            <p class="stat-number">0</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
