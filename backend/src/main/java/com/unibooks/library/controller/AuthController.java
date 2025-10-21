@@ -10,8 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-// Username system removed
-
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*")
@@ -29,12 +27,13 @@ public class AuthController {
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
-                user.getGender()
+                user.getGender(),
+                user.getRole().name()
             );
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new AuthResponse(e.getMessage(), null, null, null, null));
+                .body(new AuthResponse(e.getMessage(), null, null, null, null, null));
         }
     }
 
@@ -47,14 +46,14 @@ public class AuthController {
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
-                user.getGender()
+                user.getGender(),
+                user.getRole().name()
             );
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new AuthResponse(e.getMessage(), null, null, null, null));
+                .body(new AuthResponse(e.getMessage(), null, null, null, null, null));
         }
     }
     
-    // Username system removed
 }
