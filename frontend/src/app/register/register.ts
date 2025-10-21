@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -11,8 +12,11 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./register.css']
 })
 export class RegisterComponent {
+
+  message = '';
+  messageType: 'success' | 'error' | '' = '';
+
   registerData = {
-    username: '',
     name: '',
     email: '',
     gender: '',
@@ -20,31 +24,34 @@ export class RegisterComponent {
     confirmPassword: ''
   };
 
-  usernameStatus = '';
+  constructor(private authService: AuthService, private router: Router) { }
 
-  checkUsername() {
-    if (!this.registerData.username) {
-      this.usernameStatus = 'Please enter a username';
-      return;
-    }
 
-    // Simulate checking username availability
-    const unavailableUsernames = ['admin', 'user', 'test', 'student', 'library'];
-    
-    if (unavailableUsernames.includes(this.registerData.username.toLowerCase())) {
-      this.usernameStatus = 'Username not available';
-    } else {
-      this.usernameStatus = 'Username available';
-    }
-  }
+
 
   onRegister() {
-    if (!this.registerData.username || !this.registerData.name || !this.registerData.email || !this.registerData.password) {
-      alert('Please fill all fields');
+    if (!this.registerData.name || !this.registerData.email || !this.registerData.gender || !this.registerData.password || !this.registerData.confirmPassword) {
+      this.message = 'Please fill all fields.';
+      this.messageType = 'error';
       return;
     }
 
-    console.log('Registration Data:', this.registerData);
-    alert('Registration Successful!');
+    if (this.registerData.password !== this.registerData.confirmPassword) {
+      this.message = 'Passwords do not match.';
+      this.messageType = 'error';
+      return;
+    }
+
+    this.authService.register(this.registerData).subscribe({
+      next: () => {
+        this.message = 'Registration successful! You can now log in.';
+        this.messageType = 'success';
+        setTimeout(() => this.router.navigate(['/login']), 1200);
+      },
+      error: () => {
+        this.message = 'Registration failed. Please try again.';
+        this.messageType = 'error';
+      }
+    });
   }
 }

@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -11,18 +12,33 @@ import { RouterModule } from '@angular/router';
   styleUrl: './login.css'
 })
 export class Login {
+  message = '';
+  messageType: 'success' | 'error' | '' = '';
   loginData = {
-    username: '', // can be email or username
+    email: '',
     password: ''
   };
 
+  constructor(private authService: AuthService, private router: Router) { }
+
   onLogin() {
-    if (!this.loginData.username || !this.loginData.password) {
-      alert('Please fill all fields');
+    if (!this.loginData.email || !this.loginData.password) {
+      this.message = 'Please fill all fields.';
+      this.messageType = 'error';
       return;
     }
 
-    console.log('Login Data:', this.loginData);
-    alert('Login Successful!');
+    this.authService.login(this.loginData).subscribe({
+      next: (response) => {
+        this.message = 'Login successful! Redirecting...';
+        this.messageType = 'success';
+        localStorage.setItem('user', JSON.stringify(response));
+        setTimeout(() => this.router.navigate(['/']), 1200);
+      },
+      error: () => {
+        this.message = 'Login failed. Please check your credentials.';
+        this.messageType = 'error';
+      }
+    });
   }
 }

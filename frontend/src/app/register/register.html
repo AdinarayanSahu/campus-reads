@@ -4,12 +4,7 @@
   <label>Full Name</label>
   <input type="text" name="name" [(ngModel)]="registerData.name" required>
 
-  <label>Username</label>
-  <div class="username-container">
-    <input type="text" name="username" [(ngModel)]="registerData.username" required>
-    <button type="button" class="check-btn" (click)="checkUsername()">Check</button>
-  </div>
-   <!-- <div class="username-status">{{usernameStatus}}</div> -->
+
   
   <label>Email</label>
   <input type="email" name="email" [(ngModel)]="registerData.email" required>
@@ -30,6 +25,9 @@
   <label>Confirm Password</label>
   <input type="password" name="confirmPassword" [(ngModel)]="registerData.confirmPassword" required>
 
+  <div *ngIf="message" [ngClass]="{'success-msg': messageType === 'success', 'error-msg': messageType === 'error'}" style="margin: 10px 0;">
+    {{message}}
+  </div>
   <button type="submit">Register</button>
   <p>
     Already have an account?

@@ -1,12 +1,15 @@
 <form (ngSubmit)="onLogin()" #loginForm="ngForm">
   <h2>Welcome Back</h2>
   
-  <label>Email or Username</label>
-  <input type="text" name="username" [(ngModel)]="loginData.username" required>
+  <label>Email</label>
+  <input type="email" name="email" [(ngModel)]="loginData.email" required>
 
   <label>Password</label>
   <input type="password" name="password" [(ngModel)]="loginData.password" required>
 
+  <div *ngIf="message" [ngClass]="{'success-msg': messageType === 'success', 'error-msg': messageType === 'error'}" style="margin: 10px 0;">
+    {{message}}
+  </div>
   <button type="submit">Login</button>
   <p>
     Don't have an account?
