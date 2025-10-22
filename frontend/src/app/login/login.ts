@@ -33,7 +33,13 @@ export class Login {
         this.message = 'Login successful! Redirecting...';
         this.messageType = 'success';
         localStorage.setItem('user', JSON.stringify(response));
-        setTimeout(() => this.router.navigate(['/dashboard']), 1200);
+        setTimeout(() => {
+          if (response && response.role && response.role.toUpperCase() === 'LIBRARIAN') {
+            this.router.navigate(['/librarian-dashboard']);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
+        }, 1200);
       },
       error: () => {
         this.message = 'Login failed. Please check your credentials.';

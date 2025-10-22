@@ -1,0 +1,83 @@
+<div class="dashboard-container">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <h2>Campus Reads - Librarian Portal</h2>
+    </div>
+    <div class="navbar-menu">
+      <span class="user-info">Welcome, {{ user?.name }} (Librarian)</span>
+      <button class="logout-btn" (click)="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="dashboard-content">
+    <div class="sidebar">
+      <ul class="menu">
+        <li class="menu-item" [class.active]="activeTab === 'overview'" (click)="setActiveTab('overview')">
+          <img class="icon" src="assets/icons/dashboard.png" alt="Overview" />
+          <span>Overview</span>
+        </li>
+        <li class="menu-item" [class.active]="activeTab === 'books'" (click)="setActiveTab('books')">
+          <img class="icon" src="assets/icons/books.png" alt="Books" />
+          <span>Manage Books</span>
+        </li>
+        <li class="menu-item" [class.active]="activeTab === 'requests'" (click)="setActiveTab('requests')">
+          <img class="icon" src="assets/icons/mybooks.png" alt="Requests" />
+          <span>Borrow Requests</span>
+          <span class="badge" *ngIf="stats.pendingRequests > 0">{{ stats.pendingRequests }}</span>
+        </li>
+        <li class="menu-item" [class.active]="activeTab === 'users'" (click)="setActiveTab('users')">
+          <img class="icon" src="assets/icons/profile.png" alt="Users" />
+          <span>Manage Users</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="main-content">
+      <div class="tab-content">
+        <div class="welcome-section">
+          <h1>Librarian Dashboard</h1>
+          <p>Manage your library efficiently</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">
+                <img src="assets/icons/books.png" alt="Total Books" class="stat-img" />
+              </div>
+              <div class="stat-info">
+                <h3>{{ stats.totalBooks }}</h3>
+                <p>Total Books</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <img src="assets/icons/mybooks.png" alt="Issued Books" class="stat-img" />
+              </div>
+              <div class="stat-info">
+                <h3>{{ stats.issuedBooks }}</h3>
+                <p>Issued Books</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <img src="assets/icons/users.png" alt="Total Users" class="stat-img" />
+              </div>
+              <div class="stat-info">
+                <h3>{{ stats.totalUsers }}</h3>
+                <p>Total Users</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <img src="assets/icons/deadline.png" alt="Pending Requests" class="stat-img" />
+              </div>
+              <div class="stat-info">
+                <h3>{{ stats.pendingRequests }}</h3>
+                <p>Pending Requests</p>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
