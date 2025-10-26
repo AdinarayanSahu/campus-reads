@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BookService } from '../services/book.service';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-librarian-dashboard',
@@ -38,9 +39,23 @@ export class LibrarianDashboardComponent implements OnInit {
   searchQuery: string = '';
   filteredBooks: any[] = [];
 
+  // User management properties
+  users: any[] = [];
+  filteredUsers: any[] = [];
+  searchUserQuery: string = '';
+  showAddUserForm: boolean = false;
+  currentUser: any = {
+    name: '',
+    email: '',
+    gender: '',
+    role: 'USER',
+    password: ''
+  };
+
   constructor(
     private router: Router,
-    private bookService: BookService
+    private bookService: BookService,
+    private userService: UserService
   ) {}
 
   ngOnInit() {
@@ -61,10 +76,14 @@ export class LibrarianDashboardComponent implements OnInit {
     }
 
     this.loadBooks();
+    this.loadUsers();
   }
 
   setActiveTab(tab: string) {
     this.activeTab = tab;
+    if (tab === 'users') {
+      this.loadUsers();
+    }
   }
 
   loadBooks() {
@@ -227,6 +246,129 @@ export class LibrarianDashboardComponent implements OnInit {
     }
     if (this.currentBook.availableCopies < 0 || this.currentBook.availableCopies > this.currentBook.totalCopies) {
       alert('Available copies must be between 0 and total copies.');
+      return false;
+    }
+    return true;
+  }
+
+  // User Management Methods
+  loadUsers() {
+    this.userService.getAllUsers().subscribe({
+      next: (response) => {
+        console.log('Users loaded:', response);
+        // Filter to show only users with USER role
+        this.users = response.filter((user: any) => user.role === 'USER');
+        this.filteredUsers = this.users;
+        this.stats.totalUsers = this.users.length;
+      },
+      error: (error) => {
+        console.error('Error loading users:', error);
+        if (error.status === 401 || error.status === 403) {
+          alert('Session expired. Please login again.');
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+          }
+          this.router.navigate(['/login']);
+        } else {
+          alert('Failed to load users. Error: ' + (error.error?.message || error.message || 'Unknown error'));
+        }
+      }
+    });
+  }
+
+  searchUsers() {
+    if (!this.searchUserQuery.trim()) {
+      this.filteredUsers = this.users;
+    } else {
+      const query = this.searchUserQuery.toLowerCase();
+      this.filteredUsers = this.users.filter(user =>
+        user.name.toLowerCase().includes(query) ||
+        user.email.toLowerCase().includes(query) ||
+        user.gender.toLowerCase().includes(query)
+      );
+    }
+  }
+
+  openAddUserForm() {
+    this.showAddUserForm = true;
+    this.currentUser = {
+      name: '',
+      email: '',
+      gender: '',
+      role: 'USER',
+      password: ''
+    };
+  }
+
+  closeAddUserForm() {
+    this.showAddUserForm = false;
+    this.currentUser = {
+      name: '',
+      email: '',
+      gender: '',
+      role: 'USER',
+      password: ''
+    };
+  }
+
+  addUser() {
+    if (!this.validateUser()) {
+      return;
+    }
+
+    if (!this.currentUser.password || !this.currentUser.password.trim()) {
+      alert('Please enter a password.');
+      return;
+    }
+
+    const userData = {
+      name: this.currentUser.name,
+      email: this.currentUser.email,
+      gender: this.currentUser.gender,
+      password: this.currentUser.password,
+      role: 'USER'
+    };
+
+    this.userService.registerUser(userData).subscribe({
+      next: (response) => {
+        alert('User registered successfully!');
+        this.closeAddUserForm();
+        this.loadUsers();
+      },
+      error: (error) => {
+        console.error('Error registering user:', error);
+        if (error.status === 401 || error.status === 403) {
+          alert('Session expired. Please login again.');
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+          }
+          this.router.navigate(['/login']);
+        } else {
+          alert('Failed to register user. Error: ' + (error.error?.message || error.message || 'Unknown error'));
+        }
+      }
+    });
+  }
+
+  validateUser(): boolean {
+    if (!this.currentUser.name.trim()) {
+      alert('Please enter a name.');
+      return false;
+    }
+    if (!this.currentUser.email.trim()) {
+      alert('Please enter an email.');
+      return false;
+    }
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.currentUser.email)) {
+      alert('Please enter a valid email address.');
+      return false;
+    }
+    if (!this.currentUser.gender.trim()) {
+      alert('Please select a gender.');
       return false;
     }
     return true;

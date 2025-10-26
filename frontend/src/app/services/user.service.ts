@@ -29,4 +29,16 @@ export class UserService {
   getUserById(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
+
+  updateUser(id: number, userData: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, userData, { headers: this.getHeaders() });
+  }
+
+  deleteUser(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+  }
+
+  getUserCount(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/count`, { headers: this.getHeaders() });
+  }
 }
