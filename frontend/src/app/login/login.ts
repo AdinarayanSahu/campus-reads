@@ -33,6 +33,9 @@ export class Login {
         this.message = 'Login successful! Redirecting...';
         this.messageType = 'success';
         localStorage.setItem('user', JSON.stringify(response));
+        if (response && response.token) {
+          localStorage.setItem('token', response.token);
+        }
         setTimeout(() => {
           if (response && response.role && response.role.toUpperCase() === 'LIBRARIAN') {
             this.router.navigate(['/librarian-dashboard']);
