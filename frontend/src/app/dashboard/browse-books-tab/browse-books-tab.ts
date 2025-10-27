@@ -176,7 +176,6 @@ export class BrowseBooksTabComponent implements OnInit {
                 const bookIndex = this.books.findIndex(b => b.id === this.selectedBook.id);
                 if (bookIndex !== -1) {
                     this.books[bookIndex].availableCopies--;
-                    this.selectedBook.availableCopies--;
                 }
 
                 this.updatePagination();
