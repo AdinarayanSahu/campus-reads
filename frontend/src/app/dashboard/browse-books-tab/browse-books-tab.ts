@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BookService } from '../../services/book.service';
+import { BorrowService } from '../../services/borrow.service';
 
 @Component({
     selector: 'app-browse-books-tab',
@@ -11,15 +12,30 @@ import { BookService } from '../../services/book.service';
     styleUrls: ['./browse-books-tab.css']
 })
 export class BrowseBooksTabComponent implements OnInit {
+
     books: any[] = [];
     filteredBooks: any[] = [];
+    paginatedBooks: any[] = [];
     searchTerm: string = '';
-    selectedCategory: string = 'all';
-    categories: string[] = ['all'];
     loading: boolean = false;
     errorMessage: string = '';
 
-    constructor(private bookService: BookService) { }
+    currentPage: number = 1;
+    itemsPerPage: number = 12;
+    totalPages: number = 1;
+
+    selectedBook: any = null;
+    showBookDetails: boolean = false;
+
+    borrowDays: number = 14;
+    borrowing: boolean = false;
+    borrowSuccess: string = '';
+    borrowError: string = '';
+
+    constructor(
+        private bookService: BookService,
+        private borrowService: BorrowService
+    ) { }
 
     ngOnInit() {
         this.loadBooks();
@@ -34,7 +50,7 @@ export class BrowseBooksTabComponent implements OnInit {
                 console.log('Books loaded:', response);
                 this.books = response;
                 this.filteredBooks = response;
-                this.extractCategories();
+                this.updatePagination();
                 this.loading = false;
             },
             error: (error) => {
@@ -45,21 +61,8 @@ export class BrowseBooksTabComponent implements OnInit {
         });
     }
 
-    extractCategories() {
-        const categorySet = new Set<string>(['all']);
-        this.books.forEach(book => {
-            if (book.category) {
-                categorySet.add(book.category);
-            }
-        });
-        this.categories = Array.from(categorySet);
-    }
-
     onSearch() {
-        this.filterBooks();
-    }
-
-    onCategoryChange() {
+        this.currentPage = 1;
         this.filterBooks();
     }
 
@@ -69,11 +72,120 @@ export class BrowseBooksTabComponent implements OnInit {
                 book.title.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
                 book.author.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
                 book.isbn.toLowerCase().includes(this.searchTerm.toLowerCase());
+            return matchesSearch;
+        });
+        this.updatePagination();
+    }
 
-            const matchesCategory = this.selectedCategory === 'all' ||
-                book.category === this.selectedCategory;
+    updatePagination() {
+        this.totalPages = Math.ceil(this.filteredBooks.length / this.itemsPerPage);
+        if (this.currentPage > this.totalPages) {
+            this.currentPage = Math.max(1, this.totalPages);
+        }
+        
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        this.paginatedBooks = this.filteredBooks.slice(startIndex, endIndex);
+    }
+    
+    goToPage(page: number) {
+        if (page >= 1 && page <= this.totalPages) {
+            this.currentPage = page;
+            this.updatePagination();
+            document.querySelector('.books-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+    
+    getPageNumbers(): number[] {
+        const pages: number[] = [];
+        const maxVisiblePages = 5;
+        
+        if (this.totalPages <= maxVisiblePages) {
+            for (let i = 1; i <= this.totalPages; i++) {
+                pages.push(i);
+            }
+        } else {
+            let start = Math.max(1, this.currentPage - 2);
+            let end = Math.min(this.totalPages, start + maxVisiblePages - 1);
+            
+            if (end - start < maxVisiblePages - 1) {
+                start = Math.max(1, end - maxVisiblePages + 1);
+            }
+            
+            for (let i = start; i <= end; i++) {
+                pages.push(i);
+            }
+        }
+        
+        return pages;
+    }
 
-            return matchesSearch && matchesCategory;
+    openBookDetails(book: any) {
+        this.selectedBook = book;
+        this.showBookDetails = true;
+        this.borrowSuccess = '';
+        this.borrowError = '';
+        this.borrowDays = 14;
+    }
+
+    closeBookDetails() {
+        this.showBookDetails = false;
+        this.selectedBook = null;
+        this.borrowSuccess = '';
+        this.borrowError = '';
+    }
+    
+    borrowBook() {
+        if (!this.selectedBook) return;
+        
+        this.borrowing = true;
+        this.borrowError = '';
+        this.borrowSuccess = '';
+        
+        let userId: number | null = null;
+        if (typeof window !== 'undefined') {
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                try {
+                    const user = JSON.parse(userStr);
+                    userId = user.userId;
+                } catch (e) {
+                    console.error('Error parsing user data:', e);
+                }
+            }
+        }
+        
+        if (!userId) {
+            this.borrowError = 'User not logged in. Please log in to borrow books.';
+            this.borrowing = false;
+            return;
+        }
+        
+        const borrowRequest = {
+            userId: userId,
+            bookId: this.selectedBook.id,
+            borrowDays: this.borrowDays
+        };
+        
+        this.borrowService.borrowBook(borrowRequest).subscribe({
+            next: (response: any) => {
+                console.log('Book borrowed successfully:', response);
+                this.borrowSuccess = `Successfully borrowed "${this.selectedBook.title}"! Please return it within ${this.borrowDays} days.`;
+                this.borrowing = false;
+
+                const bookIndex = this.books.findIndex(b => b.id === this.selectedBook.id);
+                if (bookIndex !== -1) {
+                    this.books[bookIndex].availableCopies--;
+                    this.selectedBook.availableCopies--;
+                }
+
+                this.updatePagination();
+            },
+            error: (error: any) => {
+                console.error('Error borrowing book:', error);
+                this.borrowError = error.error?.error || 'Failed to borrow book. Please try again.';
+                this.borrowing = false;
+            }
         });
     }
 

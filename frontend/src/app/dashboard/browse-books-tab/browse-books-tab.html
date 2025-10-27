@@ -4,30 +4,39 @@
         <p class="subtitle">Discover and explore available books in our library</p>
     </div>
 
-    <div class="search-section">
+    <div class="search-bar">
         <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()"
             placeholder="Search by title, author, or ISBN..." class="search-input" />
     </div>
 
-    <div class="loading-message" [hidden]="!loading">
+    <div class="results-info" *ngIf="!loading && !errorMessage">
+        <p>Showing {{ paginatedBooks.length }} of {{ filteredBooks.length }} books</p>
+    </div>
+
+    <div class="loading-message" *ngIf="loading">
+        <div class="spinner"></div>
         <p>Loading books...</p>
     </div>
 
-    <div class="error-message" [hidden]="!errorMessage">
+    <div class="error-message" *ngIf="errorMessage">
         <p>{{ errorMessage }}</p>
         <button (click)="loadBooks()" class="retry-btn">Retry</button>
     </div>
 
-    <div class="no-books-message" [hidden]="loading || errorMessage || filteredBooks.length > 0">
-        <p>No books found matching your criteria.</p>
+    <div class="no-books-message" *ngIf="!loading && !errorMessage && filteredBooks.length === 0">
+        <p>No books found matching your search.</p>
     </div>
 
-    <div class="books-grid" [hidden]="loading || errorMessage || filteredBooks.length === 0">
-        <div *ngFor="let book of filteredBooks" class="book-card">
+    <div class="books-grid" *ngIf="!loading && !errorMessage && paginatedBooks.length > 0">
+        <div *ngFor="let book of paginatedBooks" class="book-card" (click)="openBookDetails(book)">
             <div class="book-cover">
-                <img src="{{ book.coverImage ? book.coverImage : 'assets/icons/books.png' }}" class="cover-image">
-                <div class="availability-badge" [class.available]="book.availableCopies > 0"
-                    [class.unavailable]="book.availableCopies === 0">
+                <img [src]="book.coverImage || 'assets/icons/books.png'" 
+                     [alt]="book.title" 
+                     class="cover-image"
+                     (error)="$any($event.target).src='assets/icons/books.png'">
+                <div class="availability-badge" 
+                     [class.available]="book.availableCopies > 0"
+                     [class.unavailable]="book.availableCopies === 0">
                     {{ book.availableCopies > 0 ? 'Available' : 'Not Available' }}
                 </div>
             </div>
@@ -40,6 +49,103 @@
                     <span class="copies-info">
                         {{ book.availableCopies }} of {{ book.totalCopies }} available
                     </span>
+                </div>
+                <button class="view-details-btn" (click)="openBookDetails(book); $event.stopPropagation()">
+                    View Details
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="pagination" *ngIf="!loading && !errorMessage && totalPages > 1">
+        <button class="page-btn" 
+                (click)="goToPage(currentPage - 1)" 
+                [disabled]="currentPage === 1">
+            Previous
+        </button>
+
+        <button class="page-btn" 
+                *ngFor="let page of getPageNumbers()" 
+                (click)="goToPage(page)"
+                [class.active]="page === currentPage">
+            {{ page }}
+        </button>
+
+        <button class="page-btn" 
+                (click)="goToPage(currentPage + 1)" 
+                [disabled]="currentPage === totalPages">
+            Next
+        </button>
+    </div>
+
+    <div class="modal-overlay" *ngIf="showBookDetails" (click)="closeBookDetails()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <button class="close-btn" (click)="closeBookDetails()">&times;</button>
+            
+            <div class="modal-body" *ngIf="selectedBook">
+                <div class="modal-image">
+                    <img [src]="selectedBook.coverImage || 'assets/icons/books.png'" 
+                         [alt]="selectedBook.title"
+                         (error)="$any($event.target).src='assets/icons/books.png'">
+                </div>
+
+                <div class="modal-info">
+                    <h2>{{ selectedBook.title }}</h2>
+                    <p class="modal-author">by {{ selectedBook.author }}</p>
+                    
+                    <div class="book-details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">ISBN:</span>
+                            <span class="detail-value">{{ selectedBook.isbn }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Category:</span>
+                            <span class="detail-value">{{ selectedBook.category }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Total Copies:</span>
+                            <span class="detail-value">{{ selectedBook.totalCopies }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Available:</span>
+                            <span class="detail-value" 
+                                  [class.available-text]="selectedBook.availableCopies > 0"
+                                  [class.unavailable-text]="selectedBook.availableCopies === 0">
+                                {{ selectedBook.availableCopies }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="availability-status" 
+                         [class.available]="selectedBook.availableCopies > 0"
+                         [class.unavailable]="selectedBook.availableCopies === 0">
+                        <span class="status-icon">{{ selectedBook.availableCopies > 0 ? '✓' : '✗' }}</span>
+                        <span class="status-text">
+                            {{ selectedBook.availableCopies > 0 ? 'Available for borrowing' : 'Currently unavailable' }}
+                        </span>
+                    </div>
+
+                    <div class="borrow-section" *ngIf="selectedBook.availableCopies > 0">
+                        <div class="borrow-info">
+                            <p class="borrow-duration-text">
+                                <strong>Borrow Duration:</strong> 14 days
+                            </p>
+                        </div>
+
+                        <button class="borrow-btn" 
+                                (click)="borrowBook()" 
+                                [disabled]="borrowing || borrowSuccess !== ''">
+                            {{ borrowing ? 'Borrowing...' : 'Borrow This Book' }}
+                        </button>
+                    </div>
+
+                    <div class="success-message" *ngIf="borrowSuccess">
+                        <p>{{ borrowSuccess }}</p>
+                    </div>
+
+                    <div class="error-message-modal" *ngIf="borrowError">
+                        <p>{{ borrowError }}</p>
+                    </div>
                 </div>
             </div>
         </div>
