@@ -42,10 +42,10 @@
         *ngIf="activeTab === 'browse'">
       </app-browse-books-tab>
 
-      <div *ngIf="activeTab === 'mybooks'" class="tab-placeholder">
-        <h2>My Books</h2>
-        <p>View your currently borrowed books and return history.</p>
-      </div>
+      <app-my-books-tab 
+        *ngIf="activeTab === 'mybooks'"
+        [user]="user">
+      </app-my-books-tab>
 
       <app-profile
         *ngIf="activeTab === 'profile'"

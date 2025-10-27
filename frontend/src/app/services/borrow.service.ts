@@ -30,7 +30,11 @@ export class BorrowService {
     }
 
     returnBook(borrowId: number): Observable<any> {
-        return this.http.put(`${this.apiUrl}/return/${borrowId}`, {}, {
+        const returnRequest = {
+            borrowRecordId: borrowId,
+            reportDamage: false
+        };
+        return this.http.post(`${this.apiUrl}/return`, returnRequest, {
             headers: this.getAuthHeaders()
         });
     }

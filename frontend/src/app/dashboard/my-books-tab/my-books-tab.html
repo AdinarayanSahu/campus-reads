@@ -1,0 +1,172 @@
+<div class="my-books-container">
+  <div class="header">
+    <h1>My Books</h1>
+    <p class="subtitle">View your borrowed books and return history</p>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="filter-tabs">
+    <button class="filter-tab" 
+            [class.active]="activeFilter === 'all'"
+            (click)="setFilter('all')">
+      All ({{ allBorrows.length }})
+    </button>
+    <button class="filter-tab" 
+            [class.active]="activeFilter === 'borrowed'"
+            (click)="setFilter('borrowed')">
+      Borrowed ({{ getActiveCount() }})
+    </button>
+    <button class="filter-tab" 
+            [class.active]="activeFilter === 'pending'"
+            (click)="setFilter('pending')">
+      Pending ({{ getPendingCount() }})
+    </button>
+    <button class="filter-tab" 
+            [class.active]="activeFilter === 'overdue'"
+            (click)="setFilter('overdue')">
+      Overdue ({{ getOverdueCount() }})
+    </button>
+    <button class="filter-tab" 
+            [class.active]="activeFilter === 'returned'"
+            (click)="setFilter('returned')">
+      Returned ({{ getReturnedCount() }})
+    </button>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <input type="text" 
+           [(ngModel)]="searchTerm" 
+           (input)="onSearch()"
+           placeholder="Search by book title or author..." 
+           class="search-input" />
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-message" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Loading your books...</p>
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-message" *ngIf="errorMessage">
+    <p>{{ errorMessage }}</p>
+    <button (click)="loadMyBooks()" class="retry-btn">Retry</button>
+  </div>
+
+  <!-- No Books Message -->
+  <div class="no-books-message" *ngIf="!loading && !errorMessage && filteredBorrows.length === 0">
+    <img src="assets/icons/books.png" alt="No books" class="empty-icon">
+    <h3>No books found</h3>
+    <p *ngIf="searchTerm">Try adjusting your search or filters.</p>
+    <p *ngIf="!searchTerm && activeFilter === 'all'">You haven't borrowed any books yet.</p>
+    <p *ngIf="!searchTerm && activeFilter !== 'all'">No books match this filter.</p>
+  </div>
+
+  <!-- Books List -->
+  <div class="books-list" *ngIf="!loading && !errorMessage && filteredBorrows.length > 0">
+    <div *ngFor="let borrow of filteredBorrows" class="borrow-card">
+      <div class="book-image">
+        <img [src]="borrow.bookCoverImage || 'assets/icons/books.png'" 
+             [alt]="borrow.bookTitle"
+             (error)="$any($event.target).src='assets/icons/books.png'">
+      </div>
+
+      <div class="borrow-info">
+        <h3 class="book-title">{{ borrow.bookTitle }}</h3>
+        <p class="book-author">by {{ borrow.bookAuthor }}</p>
+        
+        <div class="borrow-details">
+          <div class="detail-item">
+            <span class="label">Borrowed:</span>
+            <span class="value">{{ formatDate(borrow.borrowDate) }}</span>
+          </div>
+          <div class="detail-item" *ngIf="borrow.dueDate">
+            <span class="label">Due:</span>
+            <span class="value" [class.overdue]="isOverdue(borrow)">
+              {{ formatDate(borrow.dueDate) }}
+            </span>
+          </div>
+          <div class="detail-item" *ngIf="borrow.returnDate">
+            <span class="label">Returned:</span>
+            <span class="value">{{ formatDate(borrow.returnDate) }}</span>
+          </div>
+          <div class="detail-item" *ngIf="borrow.status === 'REJECTED' && borrow.rejectionReason">
+            <span class="label">Reason:</span>
+            <span class="value rejection-reason">{{ borrow.rejectionReason }}</span>
+          </div>
+        </div>
+
+        <div class="borrow-status" [ngClass]="getStatusClass(borrow)">
+          <span class="status-badge">{{ getStatusText(borrow) }}</span>
+          <span class="days-info" *ngIf="canReturn(borrow) && !isOverdue(borrow)">
+            {{ getDaysUntilDue(borrow) }} days remaining
+          </span>
+          <span class="days-info overdue-text" *ngIf="isOverdue(borrow)">
+            {{ -getDaysUntilDue(borrow) }} days overdue
+          </span>
+        </div>
+      </div>
+
+      <div class="borrow-actions">
+        <button class="return-btn" 
+                *ngIf="canReturn(borrow)"
+                (click)="openReturnModal(borrow)">
+          Return Book
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Return Book Modal -->
+<div class="modal-overlay" *ngIf="showReturnModal" (click)="closeReturnModal()">
+  <div class="modal-content return-modal" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="closeReturnModal()">&times;</button>
+    
+    <div class="modal-header">
+      <h2>Return Book</h2>
+    </div>
+
+    <div class="modal-body" *ngIf="selectedBorrow">
+      <div class="return-book-info">
+        <img [src]="selectedBorrow.bookCoverImage || 'assets/icons/books.png'" 
+             [alt]="selectedBorrow.bookTitle"
+             class="book-thumbnail"
+             (error)="$any($event.target).src='assets/icons/books.png'">
+        <div>
+          <h3>{{ selectedBorrow.bookTitle }}</h3>
+          <p>by {{ selectedBorrow.bookAuthor }}</p>
+          <p class="borrowed-date">Borrowed on: {{ formatDate(selectedBorrow.borrowDate) }}</p>
+        </div>
+      </div>
+
+      <div class="confirmation-message">
+        <p>Are you sure you want to return this book?</p>
+        <p class="note">This action cannot be undone.</p>
+      </div>
+
+      <div class="success-message" *ngIf="returnSuccess">
+        <p>{{ returnSuccess }}</p>
+      </div>
+
+      <div class="error-message" *ngIf="returnError">
+        <p>{{ returnError }}</p>
+      </div>
+
+      <div class="modal-actions">
+        <button class="cancel-btn" 
+                (click)="closeReturnModal()"
+                [disabled]="returning">
+          Cancel
+        </button>
+        <button class="confirm-btn" 
+                (click)="confirmReturn()"
+                [disabled]="returning">
+          <span *ngIf="!returning">Confirm Return</span>
+          <span *ngIf="returning">Returning...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
