@@ -4,6 +4,8 @@ import { Router, RouterModule } from '@angular/router';
 import { OverviewTabComponent } from './overview-tab/overview-tab';
 import { ManageBooksTabComponent } from './manage-books-tab/manage-books-tab';
 import { ManageUsersTabComponent } from './manage-users-tab/manage-users-tab';
+import { BorrowRequestsTabComponent } from './borrow-requests-tab/borrow-requests-tab';
+import { BorrowService } from '../services/borrow.service';
 
 @Component({
   selector: 'app-librarian-dashboard',
@@ -13,7 +15,8 @@ import { ManageUsersTabComponent } from './manage-users-tab/manage-users-tab';
     RouterModule, 
     OverviewTabComponent,
     ManageBooksTabComponent,
-    ManageUsersTabComponent
+    ManageUsersTabComponent,
+    BorrowRequestsTabComponent
   ],
   templateUrl: './librarian-dashboard.html',
   styleUrls: ['./librarian-dashboard.css']
@@ -29,7 +32,10 @@ export class LibrarianDashboardComponent implements OnInit {
     pendingRequests: 0
   };
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private borrowService: BorrowService
+  ) {}
 
   ngOnInit() {
     if (typeof window === 'undefined') {
@@ -43,14 +49,30 @@ export class LibrarianDashboardComponent implements OnInit {
         this.router.navigate(['/dashboard']);
         return;
       }
+      this.loadPendingRequestsCount();
     } else {
       this.router.navigate(['/login']);
       return;
     }
   }
 
+  loadPendingRequestsCount() {
+    this.borrowService.getPendingRequests().subscribe({
+      next: (requests) => {
+        this.stats.pendingRequests = requests.length;
+      },
+      error: (error) => {
+        console.error('Error loading pending requests count:', error);
+      }
+    });
+  }
+
   setActiveTab(tab: string) {
     this.activeTab = tab;
+    if (tab === 'requests') {
+      // Reload pending count when switching to requests tab
+      this.loadPendingRequestsCount();
+    }
   }
 
   onBookCountUpdated(count: number) {

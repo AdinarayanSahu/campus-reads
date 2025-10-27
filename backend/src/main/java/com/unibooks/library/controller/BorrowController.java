@@ -91,6 +91,48 @@ public class BorrowController {
         return ResponseEntity.ok(overdueBorrows);
     }
 
+    @GetMapping("/pending")
+    @PreAuthorize("hasAnyAuthority('LIBRARIAN', 'ADMIN')")
+    public ResponseEntity<List<BorrowResponse>> getPendingRequests() {
+        List<BorrowResponse> pendingRequests = borrowService.getPendingRequests();
+        return ResponseEntity.ok(pendingRequests);
+    }
+
+    @GetMapping("/user/{userId}/pending")
+    public ResponseEntity<List<BorrowResponse>> getUserPendingRequests(@PathVariable Long userId) {
+        List<BorrowResponse> pendingRequests = borrowService.getUserPendingRequests(userId);
+        return ResponseEntity.ok(pendingRequests);
+    }
+
+    @PostMapping("/approve/{borrowRecordId}")
+    @PreAuthorize("hasAnyAuthority('LIBRARIAN', 'ADMIN')")
+    public ResponseEntity<?> approveBorrowRequest(@PathVariable Long borrowRecordId) {
+        try {
+            BorrowResponse response = borrowService.approveBorrowRequest(borrowRecordId);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
+
+    @PostMapping("/reject/{borrowRecordId}")
+    @PreAuthorize("hasAnyAuthority('LIBRARIAN', 'ADMIN')")
+    public ResponseEntity<?> rejectBorrowRequest(
+            @PathVariable Long borrowRecordId,
+            @RequestBody(required = false) Map<String, String> body) {
+        try {
+            String reason = body != null ? body.get("reason") : null;
+            BorrowResponse response = borrowService.rejectBorrowRequest(borrowRecordId, reason);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getBorrowRecordById(@PathVariable Long id) {
         try {

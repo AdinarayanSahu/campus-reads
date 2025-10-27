@@ -169,20 +169,14 @@ export class BrowseBooksTabComponent implements OnInit {
         
         this.borrowService.borrowBook(borrowRequest).subscribe({
             next: (response: any) => {
-                console.log('Book borrowed successfully:', response);
-                this.borrowSuccess = `Successfully borrowed "${this.selectedBook.title}"! Please return it within ${this.borrowDays} days.`;
+                console.log('Borrow request sent successfully:', response);
+                this.borrowSuccess = `Borrow request sent for "${this.selectedBook.title}"! The librarian will review your request.`;
                 this.borrowing = false;
-
-                const bookIndex = this.books.findIndex(b => b.id === this.selectedBook.id);
-                if (bookIndex !== -1) {
-                    this.books[bookIndex].availableCopies--;
-                }
-
                 this.updatePagination();
             },
             error: (error: any) => {
-                console.error('Error borrowing book:', error);
-                this.borrowError = error.error?.error || 'Failed to borrow book. Please try again.';
+                console.error('Error sending borrow request:', error);
+                this.borrowError = error.error?.error || 'Failed to send borrow request. Please try again.';
                 this.borrowing = false;
             }
         });

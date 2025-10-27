@@ -32,14 +32,23 @@ public class BorrowRecord {
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BorrowStatus status = BorrowStatus.BORROWED;
+    private BorrowStatus status = BorrowStatus.PENDING;
     
     @Column
     private Double fineAmount = 0.0;
     
+    @Column
+    private LocalDateTime approvedDate;
+    
+    @Column
+    private String rejectionReason;
+    
     public enum BorrowStatus {
+        PENDING,
+        APPROVED,
         BORROWED,
         RETURNED,
+        REJECTED,
         OVERDUE,
         LOST
     }

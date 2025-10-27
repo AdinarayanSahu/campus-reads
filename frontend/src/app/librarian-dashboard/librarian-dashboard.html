@@ -22,7 +22,7 @@
         </li>
         <li class="menu-item" [class.active]="activeTab === 'requests'" (click)="setActiveTab('requests')">
           <img class="icon" src="assets/icons/mybooks.png" alt="Requests" />
-          <span>Borrow Requests</span>
+          <span>Borrow Records</span>
           <span class="badge" *ngIf="stats.pendingRequests > 0">{{ stats.pendingRequests }}</span>
         </li>
         <li class="menu-item" [class.active]="activeTab === 'users'" (click)="setActiveTab('users')">
@@ -33,19 +33,20 @@
     </div>
 
     <div class="main-content">
-      <!-- Overview Tab -->
       <app-overview-tab 
         *ngIf="activeTab === 'overview'" 
         [stats]="stats">
       </app-overview-tab>
 
-      <!-- Manage Books Tab -->
       <app-manage-books-tab 
         *ngIf="activeTab === 'books'"
         (bookCountUpdated)="onBookCountUpdated($event)">
       </app-manage-books-tab>
 
-      <!-- Manage Users Tab -->
+      <app-borrow-requests-tab
+        *ngIf="activeTab === 'requests'">
+      </app-borrow-requests-tab>
+
       <app-manage-users-tab 
         *ngIf="activeTab === 'users'"
         (userCountUpdated)="onUserCountUpdated($event)">

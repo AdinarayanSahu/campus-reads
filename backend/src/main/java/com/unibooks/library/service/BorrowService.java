@@ -48,16 +48,28 @@ public class BorrowService {
             throw new RuntimeException("Book is not available for borrowing");
         }
 
+        // Check if user has a pending request for this book
+        var existingPendingRequest = borrowRecordRepository.findActiveBookBorrowByUser(
+                user.getId(), book.getId(), BorrowStatus.PENDING);
+        if (existingPendingRequest.isPresent()) {
+            throw new RuntimeException("You already have a pending request for this book");
+        }
+
+        // Check if user already borrowed this book
         var existingBorrow = borrowRecordRepository.findActiveBookBorrowByUser(
                 user.getId(), book.getId(), BorrowStatus.BORROWED);
         if (existingBorrow.isPresent()) {
             throw new RuntimeException("You have already borrowed this book");
         }
 
+        // Count active borrows and pending requests
         long activeBorrows = borrowRecordRepository.countByUserIdAndStatus(
                 user.getId(), BorrowStatus.BORROWED);
-        if (activeBorrows >= MAX_BOOKS_PER_USER) {
-            throw new RuntimeException("You have reached the maximum borrow limit of " + MAX_BOOKS_PER_USER + " books");
+        long pendingRequests = borrowRecordRepository.countByUserIdAndStatus(
+                user.getId(), BorrowStatus.PENDING);
+        
+        if (activeBorrows + pendingRequests >= MAX_BOOKS_PER_USER) {
+            throw new RuntimeException("You have reached the maximum limit of " + MAX_BOOKS_PER_USER + " books (including pending requests)");
         }
 
         BorrowRecord borrowRecord = new BorrowRecord();
@@ -70,14 +82,54 @@ public class BorrowService {
             days = request.getBorrowDays();
         }
         borrowRecord.setDueDate(LocalDateTime.now().plusDays(days));
-        borrowRecord.setStatus(BorrowStatus.BORROWED);
+        borrowRecord.setStatus(BorrowStatus.PENDING); // Set as PENDING instead of BORROWED
 
-        book.setAvailableCopies(book.getAvailableCopies() - 1);
-        bookRepository.save(book);
-
+        // Don't decrease available copies until approved
         BorrowRecord savedRecord = borrowRecordRepository.save(borrowRecord);
 
         return convertToResponse(savedRecord);
+    }
+
+    @Transactional
+    public BorrowResponse approveBorrowRequest(Long borrowRecordId) {
+        BorrowRecord borrowRecord = borrowRecordRepository.findById(borrowRecordId)
+                .orElseThrow(() -> new RuntimeException("Borrow request not found"));
+
+        if (borrowRecord.getStatus() != BorrowStatus.PENDING) {
+            throw new RuntimeException("Only pending requests can be approved");
+        }
+
+        Book book = borrowRecord.getBook();
+        if (book.getAvailableCopies() <= 0) {
+            throw new RuntimeException("Book is no longer available");
+        }
+
+        // Approve the request
+        borrowRecord.setStatus(BorrowStatus.BORROWED);
+        borrowRecord.setApprovedDate(LocalDateTime.now());
+        
+        // Now decrease the available copies
+        book.setAvailableCopies(book.getAvailableCopies() - 1);
+        bookRepository.save(book);
+
+        BorrowRecord updatedRecord = borrowRecordRepository.save(borrowRecord);
+        return convertToResponse(updatedRecord);
+    }
+
+    @Transactional
+    public BorrowResponse rejectBorrowRequest(Long borrowRecordId, String reason) {
+        BorrowRecord borrowRecord = borrowRecordRepository.findById(borrowRecordId)
+                .orElseThrow(() -> new RuntimeException("Borrow request not found"));
+
+        if (borrowRecord.getStatus() != BorrowStatus.PENDING) {
+            throw new RuntimeException("Only pending requests can be rejected");
+        }
+
+        borrowRecord.setStatus(BorrowStatus.REJECTED);
+        borrowRecord.setRejectionReason(reason != null ? reason : "Request rejected by librarian");
+
+        BorrowRecord updatedRecord = borrowRecordRepository.save(borrowRecord);
+        return convertToResponse(updatedRecord);
     }
 
     @Transactional
@@ -152,6 +204,26 @@ public class BorrowService {
         for (BorrowRecord record : records) {
             checkIfOverdue(record);
         }
+        
+        List<BorrowResponse> responses = new ArrayList<>();
+        for (BorrowRecord record : records) {
+            responses.add(convertToResponse(record));
+        }
+        return responses;
+    }
+
+    public List<BorrowResponse> getPendingRequests() {
+        List<BorrowRecord> records = borrowRecordRepository.findByStatusOrderByBorrowDateDesc(BorrowStatus.PENDING);
+        
+        List<BorrowResponse> responses = new ArrayList<>();
+        for (BorrowRecord record : records) {
+            responses.add(convertToResponse(record));
+        }
+        return responses;
+    }
+
+    public List<BorrowResponse> getUserPendingRequests(Long userId) {
+        List<BorrowRecord> records = borrowRecordRepository.findByUserIdAndStatus(userId, BorrowStatus.PENDING);
         
         List<BorrowResponse> responses = new ArrayList<>();
         for (BorrowRecord record : records) {

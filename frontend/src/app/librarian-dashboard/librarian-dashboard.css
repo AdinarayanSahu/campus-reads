@@ -91,7 +91,7 @@
 
 .menu-item.active {
   background: rgba(102, 126, 234, 0.2);
-  border-left: 4px solid #3b82f6;
+  border-left: none;
   color: #3b82f6;
 }
 
