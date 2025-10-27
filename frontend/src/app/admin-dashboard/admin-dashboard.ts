@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AdminOverviewTabComponent } from './admin-overview-tab/admin-overview-tab';
 import { AdminManageBooksTabComponent } from './admin-manage-books-tab/admin-manage-books-tab';
+import { AdminManageLibrariansTabComponent } from './admin-manage-librarians-tab/admin-manage-librarians-tab';
 import { BookService } from '../services/book.service';
 import { UserService } from '../services/user.service';
 
@@ -13,7 +14,8 @@ import { UserService } from '../services/user.service';
     CommonModule, 
     RouterModule, 
     AdminOverviewTabComponent,
-    AdminManageBooksTabComponent
+    AdminManageBooksTabComponent,
+    AdminManageLibrariansTabComponent
   ],
   templateUrl: './admin-dashboard.html',
   styleUrls: ['./admin-dashboard.css']
@@ -53,7 +55,6 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   loadStats() {
-    // Load total books
     this.bookService.getAllBooks().subscribe({
       next: (books) => {
         this.stats.totalBooks = books.length;
@@ -61,7 +62,6 @@ export class AdminDashboardComponent implements OnInit {
       error: (error) => console.error('Error loading books:', error)
     });
 
-    // Load total users
     this.userService.getAllUsers().subscribe({
       next: (users) => {
         this.stats.totalUsers = users.filter((u: any) => 
@@ -81,6 +81,10 @@ export class AdminDashboardComponent implements OnInit {
 
   onBookCountUpdated(count: number) {
     this.stats.totalBooks = count;
+  }
+
+  onLibrarianCountUpdated(count: number) {
+    this.stats.totalLibrarians = count;
   }
 
   logout() {

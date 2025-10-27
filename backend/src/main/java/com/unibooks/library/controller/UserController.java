@@ -43,7 +43,18 @@ public class UserController {
             newUser.setEmail(userData.get("email"));
             newUser.setGender(userData.get("gender"));
             newUser.setPassword(passwordEncoder.encode(userData.get("password")));
-            newUser.setRole(User.Role.USER);
+            
+            // Set role from request, default to USER if not provided
+            String roleStr = userData.get("role");
+            if (roleStr != null && !roleStr.isEmpty()) {
+                try {
+                    newUser.setRole(User.Role.valueOf(roleStr.toUpperCase()));
+                } catch (IllegalArgumentException e) {
+                    newUser.setRole(User.Role.USER);
+                }
+            } else {
+                newUser.setRole(User.Role.USER);
+            }
 
             User savedUser = userRepository.save(newUser);
             savedUser.setPassword(null);
