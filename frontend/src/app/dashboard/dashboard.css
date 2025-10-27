@@ -202,6 +202,38 @@
   font-weight: 700;
 }
 
+.tab-placeholder {
+  background: white;
+  padding: 3rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.tab-placeholder h2 {
+  color: #3b82f6;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.tab-placeholder p {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.tab-placeholder .coming-soon {
+  color: #999;
+  font-style: italic;
+  font-size: 1rem;
+  margin-top: 2rem;
+}
+
 @media (max-width: 768px) {
   .dashboard-content {
     flex-direction: column;

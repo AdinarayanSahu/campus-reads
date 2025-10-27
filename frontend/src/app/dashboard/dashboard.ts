@@ -1,16 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { DashboardOverviewComponent } from './dashboard-overview/dashboard-overview';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, DashboardOverviewComponent],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
 export class DashboardComponent implements OnInit {
   user: any = null;
+  activeTab: string = 'overview';
+  
+  stats = {
+    booksBorrowed: 0,
+    booksReturned: 0,
+    pendingReturns: 0
+  };
 
   constructor(private router: Router) {}
 
@@ -23,6 +31,10 @@ export class DashboardComponent implements OnInit {
       // If no user data, redirect to login
       this.router.navigate(['/login']);
     }
+  }
+
+  setActiveTab(tab: string) {
+    this.activeTab = tab;
   }
 
   logout() {

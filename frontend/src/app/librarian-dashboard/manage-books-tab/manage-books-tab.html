@@ -1,0 +1,273 @@
+<div class="manage-books-container">
+  <div class="books-header">
+    <div class="welcome-section">
+      <h1>Manage Books</h1>
+    </div>
+    <button class="add-book-btn" (click)="openAddBookForm()">+ Add New Book</button>
+  </div>
+
+  <div class="search-bar">
+    <input 
+      type="text" 
+      [(ngModel)]="searchQuery" 
+      (input)="searchBooks()" 
+      placeholder="Search by title, author, ISBN, or category..."
+      class="search-input"
+    />
+  </div>
+
+  <div class="books-table-container">
+    <table class="books-table">
+      <thead>
+        <tr>
+          <th>Cover</th>
+          <th>Title</th>
+          <th>Author</th>
+          <th>ISBN</th>
+          <th>Category</th>
+          <th>Total Copies</th>
+          <th>Available</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let book of filteredBooks">
+          <td>
+            <img 
+              [src]="book.coverImage || 'assets/icons/books.png'" 
+              alt="Book Cover" 
+              class="book-cover-thumb"
+            />
+          </td>
+          <td>{{ book.title }}</td>
+          <td>{{ book.author }}</td>
+          <td>{{ book.isbn }}</td>
+          <td>{{ book.category }}</td>
+          <td>{{ book.totalCopies }}</td>
+          <td>{{ book.availableCopies }}</td>
+          <td class="action-buttons">
+            <button class="btn-edit" (click)="openEditBookForm(book)">Edit</button>
+            <button class="btn-delete" (click)="deleteBook(book.id)">Delete</button>
+          </td>
+        </tr>
+        <tr *ngIf="filteredBooks.length === 0">
+          <td colspan="8" class="no-data">No books found</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Book Modal -->
+<div class="modal" [class.show]="showAddBookForm">
+  <div class="modal-overlay" (click)="closeAddBookForm()"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Add New Book</h2>
+      <button class="close-btn" (click)="closeAddBookForm()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="addBook()">
+        <div class="form-group">
+          <label for="title">Title *</label>
+          <input 
+            type="text" 
+            id="title" 
+            [(ngModel)]="currentBook.title" 
+            name="title"
+            required
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="author">Author *</label>
+          <input 
+            type="text" 
+            id="author" 
+            [(ngModel)]="currentBook.author" 
+            name="author"
+            required
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="isbn">ISBN *</label>
+          <input 
+            type="text" 
+            id="isbn" 
+            [(ngModel)]="currentBook.isbn" 
+            name="isbn"
+            required
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="category">Category *</label>
+          <input 
+            type="text" 
+            id="category" 
+            [(ngModel)]="currentBook.category" 
+            name="category"
+            required
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="totalCopies">Total Copies *</label>
+            <input 
+              type="number" 
+              id="totalCopies" 
+              [(ngModel)]="currentBook.totalCopies" 
+              name="totalCopies"
+              min="1"
+              required
+              class="form-control"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="availableCopies">Available Copies *</label>
+            <input 
+              type="number" 
+              id="availableCopies" 
+              [(ngModel)]="currentBook.availableCopies" 
+              name="availableCopies"
+              min="0"
+              required
+              class="form-control"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="coverImage">Cover Image URL</label>
+          <input 
+            type="text" 
+            id="coverImage" 
+            [(ngModel)]="currentBook.coverImage" 
+            name="coverImage"
+            placeholder="https://example.com/book-cover.jpg"
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="closeAddBookForm()">Cancel</button>
+          <button type="submit" class="btn-submit">Add Book</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Book Modal -->
+<div class="modal" [class.show]="showEditBookForm">
+  <div class="modal-overlay" (click)="closeEditBookForm()"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Edit Book</h2>
+      <button class="close-btn" (click)="closeEditBookForm()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="updateBook()">
+        <div class="form-group">
+          <label for="edit-title">Title *</label>
+          <input 
+            type="text" 
+            id="edit-title" 
+            [(ngModel)]="currentBook.title" 
+            name="title"
+            required
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-author">Author *</label>
+          <input 
+            type="text" 
+            id="edit-author" 
+            [(ngModel)]="currentBook.author" 
+            name="author"
+            required
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-isbn">ISBN *</label>
+          <input 
+            type="text" 
+            id="edit-isbn" 
+            [(ngModel)]="currentBook.isbn" 
+            name="isbn"
+            required
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-category">Category *</label>
+          <input 
+            type="text" 
+            id="edit-category" 
+            [(ngModel)]="currentBook.category" 
+            name="category"
+            required
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-totalCopies">Total Copies *</label>
+            <input 
+              type="number" 
+              id="edit-totalCopies" 
+              [(ngModel)]="currentBook.totalCopies" 
+              name="totalCopies"
+              min="1"
+              required
+              class="form-control"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="edit-availableCopies">Available Copies *</label>
+            <input 
+              type="number" 
+              id="edit-availableCopies" 
+              [(ngModel)]="currentBook.availableCopies" 
+              name="availableCopies"
+              min="0"
+              required
+              class="form-control"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-coverImage">Cover Image URL</label>
+          <input 
+            type="text" 
+            id="edit-coverImage" 
+            [(ngModel)]="currentBook.coverImage" 
+            name="coverImage"
+            placeholder="https://example.com/book-cover.jpg"
+            class="form-control"
+          />
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="closeEditBookForm()">Cancel</button>
+          <button type="submit" class="btn-submit">Update Book</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

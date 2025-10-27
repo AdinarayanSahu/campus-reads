@@ -1,0 +1,43 @@
+<div class="overview-container">
+  <div class="welcome-section">
+    <h1>Librarian Dashboard</h1>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">
+        <img src="assets/icons/books.png" alt="Total Books" class="stat-img" />
+      </div>
+      <div class="stat-info">
+        <h3>{{ stats.totalBooks }}</h3>
+        <p>Total Books</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">
+        <img src="assets/icons/mybooks.png" alt="Issued Books" class="stat-img" />
+      </div>
+      <div class="stat-info">
+        <h3>{{ stats.issuedBooks }}</h3>
+        <p>Issued Books</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">
+        <img src="assets/icons/users.png" alt="Total Users" class="stat-img" />
+      </div>
+      <div class="stat-info">
+        <h3>{{ stats.totalUsers }}</h3>
+        <p>Total Users</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">
+        <img src="assets/icons/deadline.png" alt="Pending Requests" class="stat-img" />
+      </div>
+      <div class="stat-info">
+        <h3>{{ stats.pendingRequests }}</h3>
+        <p>Pending Requests</p>
+      </div>
+    </div>
+  </div>
+</div>
