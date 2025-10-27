@@ -32,33 +32,26 @@
     </div>
 
     <div class="main-content">
-      <!-- Dashboard Overview Tab -->
       <app-dashboard-overview 
         *ngIf="activeTab === 'overview'"
         [user]="user"
         [stats]="stats">
       </app-dashboard-overview>
 
-      <!-- Browse Books Tab - Placeholder -->
       <div *ngIf="activeTab === 'browse'" class="tab-placeholder">
         <h2>Browse Books</h2>
         <p>Browse and search for available books in the library.</p>
-        <p class="coming-soon">Coming Soon...</p>
       </div>
 
-      <!-- My Books Tab - Placeholder -->
       <div *ngIf="activeTab === 'mybooks'" class="tab-placeholder">
         <h2>My Books</h2>
         <p>View your currently borrowed books and return history.</p>
-        <p class="coming-soon">Coming Soon...</p>
       </div>
 
-      <!-- Profile Tab - Placeholder -->
-      <div *ngIf="activeTab === 'profile'" class="tab-placeholder">
-        <h2>Profile</h2>
-        <p>Manage your profile information and settings.</p>
-        <p class="coming-soon">Coming Soon...</p>
-      </div>
+      <app-profile
+        *ngIf="activeTab === 'profile'"
+        [user]="user">
+      </app-profile>
     </div>
   </div>
 </div>

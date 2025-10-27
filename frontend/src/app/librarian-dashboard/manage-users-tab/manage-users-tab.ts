@@ -39,7 +39,6 @@ export class ManageUsersTabComponent implements OnInit {
     this.userService.getAllUsers().subscribe({
       next: (response) => {
         console.log('Users loaded:', response);
-        // Filter to show only users with USER role
         this.users = response.filter((user: any) => user.role === 'USER');
         this.filteredUsers = this.users;
         this.userCountUpdated.emit(this.users.length);
@@ -144,7 +143,7 @@ export class ManageUsersTabComponent implements OnInit {
       alert('Please enter an email.');
       return false;
     }
-    // Basic email validation
+    
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(this.currentUser.email)) {
       alert('Please enter a valid email address.');
