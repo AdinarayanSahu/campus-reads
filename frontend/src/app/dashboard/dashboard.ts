@@ -33,6 +33,19 @@ export class DashboardComponent implements OnInit {
     const userData = localStorage.getItem('user');
     if (userData) {
       this.user = JSON.parse(userData);
+      
+      // Redirect admins and librarians to their respective dashboards
+      if (this.user.role) {
+        const role = this.user.role.toUpperCase();
+        if (role === 'ADMIN') {
+          this.router.navigate(['/admin-dashboard']);
+          return;
+        } else if (role === 'LIBRARIAN') {
+          this.router.navigate(['/librarian-dashboard']);
+          return;
+        }
+      }
+      
       this.loadUserStats();
     } else {
       this.router.navigate(['/login']);

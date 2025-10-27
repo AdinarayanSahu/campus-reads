@@ -37,8 +37,15 @@ export class Login {
           localStorage.setItem('token', response.token);
         }
         setTimeout(() => {
-          if (response && response.role && response.role.toUpperCase() === 'LIBRARIAN') {
-            this.router.navigate(['/librarian-dashboard']);
+          if (response && response.role) {
+            const role = response.role.toUpperCase();
+            if (role === 'ADMIN') {
+              this.router.navigate(['/admin-dashboard']);
+            } else if (role === 'LIBRARIAN') {
+              this.router.navigate(['/librarian-dashboard']);
+            } else {
+              this.router.navigate(['/dashboard']);
+            }
           } else {
             this.router.navigate(['/dashboard']);
           }

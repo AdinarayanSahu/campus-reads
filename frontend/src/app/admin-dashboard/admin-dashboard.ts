@@ -1,0 +1,86 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { AdminOverviewTabComponent } from './admin-overview-tab/admin-overview-tab';
+import { BookService } from '../services/book.service';
+import { UserService } from '../services/user.service';
+
+@Component({
+  selector: 'app-admin-dashboard',
+  standalone: true,
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    AdminOverviewTabComponent
+  ],
+  templateUrl: './admin-dashboard.html',
+  styleUrls: ['./admin-dashboard.css']
+})
+export class AdminDashboardComponent implements OnInit {
+  user: any = null;
+  activeTab: string = 'overview';
+  
+  stats = {
+    totalBooks: 0,
+    totalUsers: 0,
+    totalLibrarians: 0
+  };
+
+  constructor(
+    private router: Router,
+    private bookService: BookService,
+    private userService: UserService
+  ) {}
+
+  ngOnInit() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      this.user = JSON.parse(userData);
+      if (!this.user.role || this.user.role.toUpperCase() !== 'ADMIN') {
+        this.router.navigate(['/dashboard']);
+        return;
+      }
+      this.loadStats();
+    } else {
+      this.router.navigate(['/login']);
+    }
+  }
+
+  loadStats() {
+    // Load total books
+    this.bookService.getAllBooks().subscribe({
+      next: (books) => {
+        this.stats.totalBooks = books.length;
+      },
+      error: (error) => console.error('Error loading books:', error)
+    });
+
+    // Load total users
+    this.userService.getAllUsers().subscribe({
+      next: (users) => {
+        this.stats.totalUsers = users.filter((u: any) => 
+          u.role && u.role.toUpperCase() === 'STUDENT'
+        ).length;
+        this.stats.totalLibrarians = users.filter((u: any) => 
+          u.role && u.role.toUpperCase() === 'LIBRARIAN'
+        ).length;
+      },
+      error: (error) => console.error('Error loading users:', error)
+    });
+  }
+
+  setActiveTab(tab: string) {
+    this.activeTab = tab;
+  }
+
+  logout() {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('user');
+      this.router.navigate(['/login']);
+    }
+  }
+}

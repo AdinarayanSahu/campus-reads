@@ -1,0 +1,29 @@
+<div class="dashboard-container">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <h2>Campus Reads - Admin Portal</h2>
+    </div>
+    <div class="navbar-menu">
+      <span class="user-info">Welcome, {{ user?.name }} (Admin)</span>
+      <button class="logout-btn" (click)="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="dashboard-content">
+    <div class="sidebar">
+      <ul class="menu">
+        <li class="menu-item" [class.active]="activeTab === 'overview'" (click)="setActiveTab('overview')">
+          <img class="icon" src="assets/icons/dashboard.png" alt="Overview" />
+          <span>Overview</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="main-content">
+      <app-admin-overview-tab 
+        *ngIf="activeTab === 'overview'" 
+        [stats]="stats">
+      </app-admin-overview-tab>
+    </div>
+  </div>
+</div>
