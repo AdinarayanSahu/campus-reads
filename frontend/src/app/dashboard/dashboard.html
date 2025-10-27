@@ -38,10 +38,9 @@
         [stats]="stats">
       </app-dashboard-overview>
 
-      <div *ngIf="activeTab === 'browse'" class="tab-placeholder">
-        <h2>Browse Books</h2>
-        <p>Browse and search for available books in the library.</p>
-      </div>
+      <app-browse-books-tab 
+        *ngIf="activeTab === 'browse'">
+      </app-browse-books-tab>
 
       <div *ngIf="activeTab === 'mybooks'" class="tab-placeholder">
         <h2>My Books</h2>

@@ -1,0 +1,47 @@
+<div class="browse-books-container">
+    <div class="header">
+        <h1>Browse Books</h1>
+        <p class="subtitle">Discover and explore available books in our library</p>
+    </div>
+
+    <div class="search-section">
+        <input type="text" [(ngModel)]="searchTerm" (input)="onSearch()"
+            placeholder="Search by title, author, or ISBN..." class="search-input" />
+    </div>
+
+    <div class="loading-message" [hidden]="!loading">
+        <p>Loading books...</p>
+    </div>
+
+    <div class="error-message" [hidden]="!errorMessage">
+        <p>{{ errorMessage }}</p>
+        <button (click)="loadBooks()" class="retry-btn">Retry</button>
+    </div>
+
+    <div class="no-books-message" [hidden]="loading || errorMessage || filteredBooks.length > 0">
+        <p>No books found matching your criteria.</p>
+    </div>
+
+    <div class="books-grid" [hidden]="loading || errorMessage || filteredBooks.length === 0">
+        <div *ngFor="let book of filteredBooks" class="book-card">
+            <div class="book-cover">
+                <img src="{{ book.coverImage ? book.coverImage : 'assets/icons/books.png' }}" class="cover-image">
+                <div class="availability-badge" [class.available]="book.availableCopies > 0"
+                    [class.unavailable]="book.availableCopies === 0">
+                    {{ book.availableCopies > 0 ? 'Available' : 'Not Available' }}
+                </div>
+            </div>
+
+            <div class="book-info">
+                <h3 class="book-title">{{ book.title }}</h3>
+                <p class="book-author">by {{ book.author }}</p>
+                <p class="book-category">{{ book.category }}</p>
+                <div class="book-copies">
+                    <span class="copies-info">
+                        {{ book.availableCopies }} of {{ book.totalCopies }} available
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

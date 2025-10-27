@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { DashboardOverviewComponent } from './dashboard-overview/dashboard-overview';
 import { ProfileComponent } from './profile/profile';
+import { BrowseBooksTabComponent } from './browse-books-tab/browse-books-tab';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, DashboardOverviewComponent, ProfileComponent],
+  imports: [CommonModule, RouterModule, DashboardOverviewComponent, ProfileComponent, BrowseBooksTabComponent],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
