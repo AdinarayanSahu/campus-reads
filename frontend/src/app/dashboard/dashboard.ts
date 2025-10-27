@@ -34,7 +34,6 @@ export class DashboardComponent implements OnInit {
     if (userData) {
       this.user = JSON.parse(userData);
       
-      // Redirect admins and librarians to their respective dashboards
       if (this.user.role) {
         const role = this.user.role.toUpperCase();
         if (role === 'ADMIN') {
@@ -55,10 +54,8 @@ export class DashboardComponent implements OnInit {
   loadUserStats() {
     if (!this.user || !this.user.userId) return;
 
-    // Get all user's borrow records
     this.borrowService.getUserBorrows(this.user.userId).subscribe({
       next: (borrows) => {
-        // Calculate stats from borrow records
         this.stats.booksBorrowed = borrows.length;
         this.stats.booksReturned = borrows.filter((b: any) => 
           b.status === 'RETURNED' || b.returnDate
@@ -75,7 +72,6 @@ export class DashboardComponent implements OnInit {
 
   setActiveTab(tab: string) {
     this.activeTab = tab;
-    // Refresh stats when switching to overview tab
     if (tab === 'overview') {
       this.loadUserStats();
     }

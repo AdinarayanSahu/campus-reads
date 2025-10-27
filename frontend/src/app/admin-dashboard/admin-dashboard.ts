@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { AdminOverviewTabComponent } from './admin-overview-tab/admin-overview-tab';
+import { AdminManageBooksTabComponent } from './admin-manage-books-tab/admin-manage-books-tab';
 import { BookService } from '../services/book.service';
 import { UserService } from '../services/user.service';
 
@@ -11,7 +12,8 @@ import { UserService } from '../services/user.service';
   imports: [
     CommonModule, 
     RouterModule, 
-    AdminOverviewTabComponent
+    AdminOverviewTabComponent,
+    AdminManageBooksTabComponent
   ],
   templateUrl: './admin-dashboard.html',
   styleUrls: ['./admin-dashboard.css']
@@ -75,6 +77,10 @@ export class AdminDashboardComponent implements OnInit {
 
   setActiveTab(tab: string) {
     this.activeTab = tab;
+  }
+
+  onBookCountUpdated(count: number) {
+    this.stats.totalBooks = count;
   }
 
   logout() {

@@ -16,6 +16,10 @@
           <img class="icon" src="assets/icons/dashboard.png" alt="Overview" />
           <span>Overview</span>
         </li>
+        <li class="menu-item" [class.active]="activeTab === 'books'" (click)="setActiveTab('books')">
+          <img class="icon" src="assets/icons/books.png" alt="Books" />
+          <span>Manage Books</span>
+        </li>
       </ul>
     </div>
 
@@ -24,6 +28,11 @@
         *ngIf="activeTab === 'overview'" 
         [stats]="stats">
       </app-admin-overview-tab>
+
+      <app-admin-manage-books-tab 
+        *ngIf="activeTab === 'books'"
+        (bookCountUpdated)="onBookCountUpdated($event)">
+      </app-admin-manage-books-tab>
     </div>
   </div>
 </div>
