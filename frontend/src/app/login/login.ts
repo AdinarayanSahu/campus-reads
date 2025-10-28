@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -18,8 +18,16 @@ export class Login {
     email: '',
     password: ''
   };
+  returnUrl: string = '/dashboard';
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
+  
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+  }
 
   onLogin() {
     if (!this.loginData.email || !this.loginData.password) {
@@ -32,19 +40,21 @@ export class Login {
       next: (response) => {
         this.message = 'Login successful! Redirecting...';
         this.messageType = 'success';
-        localStorage.setItem('user', JSON.stringify(response));
-        if (response && response.token) {
-          localStorage.setItem('token', response.token);
-        }
+        
         setTimeout(() => {
           if (response && response.role) {
             const role = response.role.toUpperCase();
-            if (role === 'ADMIN') {
-              this.router.navigate(['/admin-dashboard']);
-            } else if (role === 'LIBRARIAN') {
-              this.router.navigate(['/librarian-dashboard']);
+            
+            if (this.returnUrl && this.returnUrl !== '/dashboard') {
+              this.router.navigateByUrl(this.returnUrl);
             } else {
-              this.router.navigate(['/dashboard']);
+              if (role === 'ADMIN') {
+                this.router.navigate(['/admin-dashboard']);
+              } else if (role === 'LIBRARIAN') {
+                this.router.navigate(['/librarian-dashboard']);
+              } else {
+                this.router.navigate(['/dashboard']);
+              }
             }
           } else {
             this.router.navigate(['/dashboard']);

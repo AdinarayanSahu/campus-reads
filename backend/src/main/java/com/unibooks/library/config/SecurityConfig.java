@@ -50,6 +50,10 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/", "/login", "/register", "/dashboard/**", 
+                    "/librarian-dashboard/**", "/admin-dashboard/**", 
+                    "/session-test", "/assets/**", "/index.html", 
+                    "/*.css", "/*.js", "/*.ico", "/*.png", "/*.jpg").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
