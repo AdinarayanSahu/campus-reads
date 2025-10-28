@@ -1,22 +1,22 @@
-<div class="manage-librarians-tab">
+<div class="manage-users-tab">
   <div class="header">
-    <h2>Manage Librarians</h2>
+    <h2>Manage Users</h2>
     <div class="actions">
       <div class="search-box">
         <input
           type="text"
-          placeholder="Search librarians by name or email..."
+          placeholder="Search users by name or email..."
           [(ngModel)]="searchQuery"
-          (input)="searchLibrarians()"
+          (input)="searchUsers()"
         />
       </div>
-      <button class="btn-primary" (click)="openAddLibrarianForm()">
-        Add Librarian
+      <button class="btn-primary" (click)="openAddUserForm()">
+        Add User
       </button>
     </div>
   </div>
 
-  <div class="librarians-table">
+  <div class="users-table">
     <table>
       <thead>
         <tr>
@@ -28,41 +28,41 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let librarian of filteredLibrarians">
-          <td>{{ librarian.id }}</td>
-          <td>{{ librarian.name }}</td>
-          <td>{{ librarian.email }}</td>
-          <td>{{ librarian.gender }}</td>
+        <tr *ngFor="let user of filteredUsers">
+          <td>{{ user.id }}</td>
+          <td>{{ user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.gender }}</td>
           <td class="actions-cell">
-            <button class="btn-edit" (click)="openEditLibrarianForm(librarian)">
+            <button class="btn-edit" (click)="openEditUserForm(user)">
               Edit
             </button>
-            <button class="btn-delete" (click)="deleteLibrarian(librarian)">
+            <button class="btn-delete" (click)="deleteUser(user)">
               Delete
             </button>
           </td>
         </tr>
-        <tr *ngIf="filteredLibrarians.length === 0">
-          <td colspan="5" class="no-data">No librarians found</td>
+        <tr *ngIf="filteredUsers.length === 0">
+          <td colspan="5" class="no-data">No users found</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <div class="modal" *ngIf="showAddLibrarianForm">
+  <div class="modal" *ngIf="showAddUserForm">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Add New Librarian</h3>
-        <button class="close-btn" (click)="closeAddLibrarianForm()">&times;</button>
+        <h3>Add New User</h3>
+        <button class="close-btn" (click)="closeAddUserForm()">&times;</button>
       </div>
       <div class="modal-body">
-        <form (ngSubmit)="addLibrarian()">
+        <form (ngSubmit)="addUser()">
           <div class="form-group">
             <label for="name">Name *</label>
             <input
               type="text"
               id="name"
-              [(ngModel)]="currentLibrarian.name"
+              [(ngModel)]="currentUser.name"
               name="name"
               required
             />
@@ -72,7 +72,7 @@
             <input
               type="email"
               id="email"
-              [(ngModel)]="currentLibrarian.email"
+              [(ngModel)]="currentUser.email"
               name="email"
               required
             />
@@ -81,7 +81,7 @@
             <label for="gender">Gender *</label>
             <select
               id="gender"
-              [(ngModel)]="currentLibrarian.gender"
+              [(ngModel)]="currentUser.gender"
               name="gender"
               required
             >
@@ -96,17 +96,17 @@
             <input
               type="password"
               id="password"
-              [(ngModel)]="currentLibrarian.password"
+              [(ngModel)]="currentUser.password"
               name="password"
               required
             />
           </div>
           <div class="form-actions">
-            <button type="button" class="btn-cancel" (click)="closeAddLibrarianForm()">
+            <button type="button" class="btn-cancel" (click)="closeAddUserForm()">
               Cancel
             </button>
             <button type="submit" class="btn-primary">
-              Add Librarian
+              Add User
             </button>
           </div>
         </form>
@@ -114,20 +114,20 @@
     </div>
   </div>
 
-  <div class="modal" *ngIf="showEditLibrarianForm">
+  <div class="modal" *ngIf="showEditUserForm">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Edit Librarian</h3>
-        <button class="close-btn" (click)="closeEditLibrarianForm()">&times;</button>
+        <h3>Edit User</h3>
+        <button class="close-btn" (click)="closeEditUserForm()">&times;</button>
       </div>
       <div class="modal-body">
-        <form (ngSubmit)="updateLibrarian()">
+        <form (ngSubmit)="updateUser()">
           <div class="form-group">
             <label for="edit-name">Name *</label>
             <input
               type="text"
               id="edit-name"
-              [(ngModel)]="selectedLibrarian.name"
+              [(ngModel)]="selectedUser.name"
               name="name"
               required
             />
@@ -137,7 +137,7 @@
             <input
               type="email"
               id="edit-email"
-              [(ngModel)]="selectedLibrarian.email"
+              [(ngModel)]="selectedUser.email"
               name="email"
               required
             />
@@ -146,7 +146,7 @@
             <label for="edit-gender">Gender *</label>
             <select
               id="edit-gender"
-              [(ngModel)]="selectedLibrarian.gender"
+              [(ngModel)]="selectedUser.gender"
               name="gender"
               required
             >
@@ -156,22 +156,12 @@
               <option value="Other">Other</option>
             </select>
           </div>
-          <div class="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              disabled
-              placeholder="Cannot change password"
-              style="background-color: #f0f0f0; cursor: not-allowed;"
-            />
-            <small style="color: #666;">Password cannot be changed through this form</small>
-          </div>
           <div class="form-actions">
-            <button type="button" class="btn-cancel" (click)="closeEditLibrarianForm()">
+            <button type="button" class="btn-cancel" (click)="closeEditUserForm()">
               Cancel
             </button>
             <button type="submit" class="btn-primary">
-              Update Librarian
+              Update User
             </button>
           </div>
         </form>

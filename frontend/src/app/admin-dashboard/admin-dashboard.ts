@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AdminOverviewTabComponent } from './admin-overview-tab/admin-overview-tab';
 import { AdminManageBooksTabComponent } from './admin-manage-books-tab/admin-manage-books-tab';
 import { AdminManageLibrariansTabComponent } from './admin-manage-librarians-tab/admin-manage-librarians-tab';
+import { AdminManageUsersTabComponent } from './admin-manage-users-tab/admin-manage-users-tab';
 import { BookService } from '../services/book.service';
 import { UserService } from '../services/user.service';
 
@@ -15,7 +16,8 @@ import { UserService } from '../services/user.service';
     RouterModule, 
     AdminOverviewTabComponent,
     AdminManageBooksTabComponent,
-    AdminManageLibrariansTabComponent
+    AdminManageLibrariansTabComponent,
+    AdminManageUsersTabComponent
   ],
   templateUrl: './admin-dashboard.html',
   styleUrls: ['./admin-dashboard.css']
@@ -65,7 +67,7 @@ export class AdminDashboardComponent implements OnInit {
     this.userService.getAllUsers().subscribe({
       next: (users) => {
         this.stats.totalUsers = users.filter((u: any) => 
-          u.role && u.role.toUpperCase() === 'STUDENT'
+          u.role && u.role.toUpperCase() === 'USER'
         ).length;
         this.stats.totalLibrarians = users.filter((u: any) => 
           u.role && u.role.toUpperCase() === 'LIBRARIAN'
@@ -85,6 +87,10 @@ export class AdminDashboardComponent implements OnInit {
 
   onLibrarianCountUpdated(count: number) {
     this.stats.totalLibrarians = count;
+  }
+
+  onUserCountUpdated(count: number) {
+    this.stats.totalUsers = count;
   }
 
   logout() {

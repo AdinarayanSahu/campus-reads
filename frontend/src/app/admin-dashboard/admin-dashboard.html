@@ -20,6 +20,10 @@
           <img class="icon" src="assets/icons/books.png" alt="Books" />
           <span>Manage Books</span>
         </li>
+        <li class="menu-item" [class.active]="activeTab === 'users'" (click)="setActiveTab('users')">
+          <img class="icon" src="assets/icons/users.png" alt="Users" />
+          <span>Manage Users</span>
+        </li>
         <li class="menu-item" [class.active]="activeTab === 'librarians'" (click)="setActiveTab('librarians')">
          <img class="icon" src="assets/icons/users.png" alt="Librarians" />
           <span>Manage Librarians</span>
@@ -37,6 +41,11 @@
         *ngIf="activeTab === 'books'"
         (bookCountUpdated)="onBookCountUpdated($event)">
       </app-admin-manage-books-tab>
+
+      <app-admin-manage-users-tab 
+        *ngIf="activeTab === 'users'"
+        (userCountUpdated)="onUserCountUpdated($event)">
+      </app-admin-manage-users-tab>
 
       <app-admin-manage-librarians-tab 
         *ngIf="activeTab === 'librarians'"
