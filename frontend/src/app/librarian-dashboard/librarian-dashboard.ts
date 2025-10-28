@@ -6,6 +6,8 @@ import { ManageBooksTabComponent } from './manage-books-tab/manage-books-tab';
 import { ManageUsersTabComponent } from './manage-users-tab/manage-users-tab';
 import { BorrowRequestsTabComponent } from './borrow-requests-tab/borrow-requests-tab';
 import { BorrowService } from '../services/borrow.service';
+import { BookService } from '../services/book.service';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-librarian-dashboard',
@@ -34,7 +36,9 @@ export class LibrarianDashboardComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private borrowService: BorrowService
+    private borrowService: BorrowService,
+    private bookService: BookService,
+    private userService: UserService
   ) {}
 
   ngOnInit() {
@@ -49,11 +53,55 @@ export class LibrarianDashboardComponent implements OnInit {
         this.router.navigate(['/dashboard']);
         return;
       }
-      this.loadPendingRequestsCount();
+      this.loadStats();
     } else {
       this.router.navigate(['/login']);
       return;
     }
+  }
+
+  loadStats() {
+    this.loadBooksCount();
+    this.loadUsersCount();
+    this.loadIssuedBooksCount();
+    this.loadPendingRequestsCount();
+  }
+
+  loadBooksCount() {
+    this.bookService.getAllBooks().subscribe({
+      next: (books) => {
+        this.stats.totalBooks = books.length;
+      },
+      error: (error) => {
+        console.error('Error loading books count:', error);
+      }
+    });
+  }
+
+  loadUsersCount() {
+    this.userService.getAllUsers().subscribe({
+      next: (users) => {
+        this.stats.totalUsers = users.filter((u: any) => 
+          u.role && u.role.toUpperCase() === 'USER'
+        ).length;
+      },
+      error: (error) => {
+        console.error('Error loading users count:', error);
+      }
+    });
+  }
+
+  loadIssuedBooksCount() {
+    this.borrowService.getAllBorrows().subscribe({
+      next: (records: any) => {
+        this.stats.issuedBooks = records.filter((r: any) => 
+          r.status && r.status.toUpperCase() === 'BORROWED'
+        ).length;
+      },
+      error: (error: any) => {
+        console.error('Error loading issued books count:', error);
+      }
+    });
   }
 
   loadPendingRequestsCount() {
