@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
@@ -7,36 +7,47 @@ import { AuthService } from '../services/auth.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
-export class Login {
+export class Login implements OnInit {
   message = '';
   messageType: 'success' | 'error' | '' = '';
-  loginData = {
-    email: '',
-    password: ''
-  };
+  loginForm!: FormGroup;
   returnUrl: string = '/dashboard';
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private fb: FormBuilder
   ) {
-  
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
   }
 
+  ngOnInit() {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
+    });
+  }
+
+  get f() {
+    return this.loginForm.controls;
+  }
+
   onLogin() {
-    if (!this.loginData.email || !this.loginData.password) {
-      this.message = 'Please fill all fields.';
-      this.messageType = 'error';
+    if (this.loginForm.invalid) {
+      Object.keys(this.loginForm.controls).forEach(key => {
+        this.loginForm.controls[key].markAsTouched();
+      });
       return;
     }
 
-    this.authService.login(this.loginData).subscribe({
+    const loginData = this.loginForm.value;
+    
+    this.authService.login(loginData).subscribe({
       next: (response) => {
         this.message = 'Login successful! Redirecting...';
         this.messageType = 'success';
