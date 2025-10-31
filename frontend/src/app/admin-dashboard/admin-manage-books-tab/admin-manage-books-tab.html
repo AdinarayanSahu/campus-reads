@@ -31,28 +31,31 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let book of filteredBooks">
-          <td>
-            <img 
-              [src]="book.coverImage || 'assets/icons/books.png'" 
-              alt="Book Cover" 
-              class="book-cover-thumb"
-            />
-          </td>
-          <td>{{ book.title }}</td>
-          <td>{{ book.author }}</td>
-          <td>{{ book.isbn }}</td>
-          <td>{{ book.category }}</td>
-          <td>{{ book.totalCopies }}</td>
-          <td>{{ book.availableCopies }}</td>
-          <td class="action-buttons">
-            <button class="btn-edit" (click)="openEditBookForm(book)">Edit</button>
-            <button class="btn-delete" (click)="deleteBook(book.id)">Delete</button>
-          </td>
-        </tr>
-        <tr *ngIf="filteredBooks.length === 0">
-          <td colspan="8" class="no-data">No books found</td>
-        </tr>
+        @for (book of filteredBooks; track book.id) {
+          <tr>
+            <td>
+              <img 
+                [src]="book.coverImage || 'assets/icons/books.png'" 
+                alt="Book Cover" 
+                class="book-cover-thumb"
+              />
+            </td>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td>{{ book.isbn }}</td>
+            <td>{{ book.category }}</td>
+            <td>{{ book.totalCopies }}</td>
+            <td>{{ book.availableCopies }}</td>
+            <td class="action-buttons">
+              <button class="btn-edit" (click)="openEditBookForm(book)">Edit</button>
+              <button class="btn-delete" (click)="deleteBook(book.id)">Delete</button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="8" class="no-data">No books found</td>
+          </tr>
+        }
       </tbody>
     </table>
   </div>
@@ -75,8 +78,29 @@
             [(ngModel)]="currentBook.title" 
             name="title"
             required
+            minlength="2"
+            maxlength="100"
+            pattern="^[A-Za-z0-9 .,'-]+$"
+            #title="ngModel"
+            [class.invalid]="title.invalid && title.touched"
             class="form-control"
           />
+        @if (title.invalid && title.touched) {
+          <div class="error-text">
+            @if (title.errors?.['required']) {
+              <span>Title is required.</span>
+            }
+            @if (title.errors?.['minlength']) {
+              <span>Title must be at least 2 characters.</span>
+            }
+            @if (title.errors?.['maxlength']) {
+              <span>Title cannot be more than 100 characters.</span>
+            }
+            @if (title.errors?.['pattern']) {
+              <span>Title can only contain letters, numbers, spaces, and . , ' -</span>
+            }
+          </div>
+        }
         </div>
 
         <div class="form-group">
@@ -87,8 +111,29 @@
             [(ngModel)]="currentBook.author" 
             name="author"
             required
+            minlength="2"
+            maxlength="50"
+            pattern="^[A-Za-z .'-]+$"
+            #author="ngModel"
+            [class.invalid]="author.invalid && author.touched"
             class="form-control"
           />
+        @if (author.invalid && author.touched) {
+          <div class="error-text">
+            @if (author.errors?.['required']) {
+              <span>Author is required.</span>
+            }
+            @if (author.errors?.['minlength']) {
+              <span>Author must be at least 2 characters.</span>
+            }
+            @if (author.errors?.['maxlength']) {
+              <span>Author cannot be more than 50 characters.</span>
+            }
+            @if (author.errors?.['pattern']) {
+              <span>Author can only contain letters, spaces, and . ' -</span>
+            }
+          </div>
+        }
         </div>
 
         <div class="form-group">
@@ -99,8 +144,29 @@
             [(ngModel)]="currentBook.isbn" 
             name="isbn"
             required
+            minlength="10"
+            maxlength="17"
+            pattern="^[0-9A-Za-z-]+$"
+            #isbn="ngModel"
+            [class.invalid]="isbn.invalid && isbn.touched"
             class="form-control"
           />
+        @if (isbn.invalid && isbn.touched) {
+          <div class="error-text">
+            @if (isbn.errors?.['required']) {
+              <span>ISBN is required.</span>
+            }
+            @if (isbn.errors?.['minlength']) {
+              <span>ISBN must be at least 10 characters.</span>
+            }
+            @if (isbn.errors?.['maxlength']) {
+              <span>ISBN cannot be more than 17 characters.</span>
+            }
+            @if (isbn.errors?.['pattern']) {
+              <span>ISBN must be alphanumeric and can include dashes.</span>
+            }
+          </div>
+        }
         </div>
 
         <div class="form-group">
@@ -111,8 +177,29 @@
             [(ngModel)]="currentBook.category" 
             name="category"
             required
+            minlength="2"
+            maxlength="30"
+            pattern="^[A-Za-z0-9 .'-]+$"
+            #category="ngModel"
+            [class.invalid]="category.invalid && category.touched"
             class="form-control"
           />
+        @if (category.invalid && category.touched) {
+          <div class="error-text">
+            @if (category.errors?.['required']) {
+              <span>Category is required.</span>
+            }
+            @if (category.errors?.['minlength']) {
+              <span>Category must be at least 2 characters.</span>
+            }
+            @if (category.errors?.['maxlength']) {
+              <span>Category cannot be more than 30 characters.</span>
+            }
+            @if (category.errors?.['pattern']) {
+              <span>Category can only contain letters, numbers, spaces, and . ' -</span>
+            }
+          </div>
+        }
         </div>
 
         <div class="form-row">
@@ -124,9 +211,25 @@
               [(ngModel)]="currentBook.totalCopies" 
               name="totalCopies"
               min="1"
+              max="999"
               required
+              #totalCopies="ngModel"
+              [class.invalid]="totalCopies.invalid && totalCopies.touched"
               class="form-control"
             />
+            @if (totalCopies.invalid && totalCopies.touched) {
+              <div class="error-text">
+                @if (totalCopies.errors?.['required']) {
+                  <span>Total copies is required.</span>
+                }
+                @if (totalCopies.errors?.['min']) {
+                  <span>Total copies must be at least 1.</span>
+                }
+                @if (totalCopies.errors?.['max']) {
+                  <span>Total copies cannot be more than 999.</span>
+                }
+              </div>
+            }
           </div>
 
           <div class="form-group">
@@ -137,9 +240,25 @@
               [(ngModel)]="currentBook.availableCopies" 
               name="availableCopies"
               min="0"
+              max="999"
               required
+              #availableCopies="ngModel"
+              [class.invalid]="availableCopies.invalid && availableCopies.touched"
               class="form-control"
             />
+            @if (availableCopies.invalid && availableCopies.touched) {
+              <div class="error-text">
+                @if (availableCopies.errors?.['required']) {
+                  <span>Available copies is required.</span>
+                }
+                @if (availableCopies.errors?.['min']) {
+                  <span>Available copies cannot be negative.</span>
+                }
+                @if (availableCopies.errors?.['max']) {
+                  <span>Available copies cannot be more than 999.</span>
+                }
+              </div>
+            }
           </div>
         </div>
 
@@ -150,9 +269,19 @@
             id="coverImage" 
             [(ngModel)]="currentBook.coverImage" 
             name="coverImage"
+            pattern="^https://.*$"
+            #coverImage="ngModel"
+            [class.invalid]="coverImage.invalid && coverImage.touched"
             placeholder="https://example.com/book-cover.jpg"
             class="form-control"
           />
+          @if (coverImage.invalid && coverImage.touched) {
+            <div class="error-text">
+              @if (coverImage.errors?.['pattern']) {
+                <span>Please enter a valid URL starting with https://</span>
+              }
+            </div>
+          }
         </div>
 
         <div class="form-actions">
@@ -181,8 +310,29 @@
             [(ngModel)]="currentBook.title" 
             name="title"
             required
+            minlength="2"
+            maxlength="100"
+            pattern="^[A-Za-z0-9 .,'-]+$"
+            #editTitle="ngModel"
+            [class.invalid]="editTitle.invalid && editTitle.touched"
             class="form-control"
           />
+        @if (editTitle.invalid && editTitle.touched) {
+          <div class="error-text">
+            @if (editTitle.errors?.['required']) {
+              <span>Title is required.</span>
+            }
+            @if (editTitle.errors?.['minlength']) {
+              <span>Title must be at least 2 characters.</span>
+            }
+            @if (editTitle.errors?.['maxlength']) {
+              <span>Title cannot be more than 100 characters.</span>
+            }
+            @if (editTitle.errors?.['pattern']) {
+              <span>Title can only contain letters, numbers, spaces, and . , ' -</span>
+            }
+          </div>
+        }
         </div>
 
         <div class="form-group">
@@ -193,8 +343,29 @@
             [(ngModel)]="currentBook.author" 
             name="author"
             required
+            minlength="2"
+            maxlength="50"
+            pattern="^[A-Za-z .'-]+$"
+            #editAuthor="ngModel"
+            [class.invalid]="editAuthor.invalid && editAuthor.touched"
             class="form-control"
           />
+        @if (editAuthor.invalid && editAuthor.touched) {
+          <div class="error-text">
+            @if (editAuthor.errors?.['required']) {
+              <span>Author is required.</span>
+            }
+            @if (editAuthor.errors?.['minlength']) {
+              <span>Author must be at least 2 characters.</span>
+            }
+            @if (editAuthor.errors?.['maxlength']) {
+              <span>Author cannot be more than 50 characters.</span>
+            }
+            @if (editAuthor.errors?.['pattern']) {
+              <span>Author can only contain letters, spaces, and . ' -</span>
+            }
+          </div>
+        }
         </div>
 
         <div class="form-group">
@@ -205,8 +376,29 @@
             [(ngModel)]="currentBook.isbn" 
             name="isbn"
             required
+            minlength="10"
+            maxlength="17"
+            pattern="^[0-9A-Za-z-]+$"
+            #editIsbn="ngModel"
+            [class.invalid]="editIsbn.invalid && editIsbn.touched"
             class="form-control"
           />
+        @if (editIsbn.invalid && editIsbn.touched) {
+          <div class="error-text">
+            @if (editIsbn.errors?.['required']) {
+              <span>ISBN is required.</span>
+            }
+            @if (editIsbn.errors?.['minlength']) {
+              <span>ISBN must be at least 10 characters.</span>
+            }
+            @if (editIsbn.errors?.['maxlength']) {
+              <span>ISBN cannot be more than 17 characters.</span>
+            }
+            @if (editIsbn.errors?.['pattern']) {
+              <span>ISBN must be alphanumeric and can include dashes.</span>
+            }
+          </div>
+        }
         </div>
 
         <div class="form-group">
@@ -217,8 +409,29 @@
             [(ngModel)]="currentBook.category" 
             name="category"
             required
+            minlength="2"
+            maxlength="30"
+            pattern="^[A-Za-z0-9 .'-]+$"
+            #editCategory="ngModel"
+            [class.invalid]="editCategory.invalid && editCategory.touched"
             class="form-control"
           />
+        @if (editCategory.invalid && editCategory.touched) {
+          <div class="error-text">
+            @if (editCategory.errors?.['required']) {
+              <span>Category is required.</span>
+            }
+            @if (editCategory.errors?.['minlength']) {
+              <span>Category must be at least 2 characters.</span>
+            }
+            @if (editCategory.errors?.['maxlength']) {
+              <span>Category cannot be more than 30 characters.</span>
+            }
+            @if (editCategory.errors?.['pattern']) {
+              <span>Category can only contain letters, numbers, spaces, and . ' -</span>
+            }
+          </div>
+        }
         </div>
 
         <div class="form-row">
@@ -230,9 +443,25 @@
               [(ngModel)]="currentBook.totalCopies" 
               name="totalCopies"
               min="1"
+              max="999"
               required
+              #editTotalCopies="ngModel"
+              [class.invalid]="editTotalCopies.invalid && editTotalCopies.touched"
               class="form-control"
             />
+            @if (editTotalCopies.invalid && editTotalCopies.touched) {
+              <div class="error-text">
+                @if (editTotalCopies.errors?.['required']) {
+                  <span>Total copies is required.</span>
+                }
+                @if (editTotalCopies.errors?.['min']) {
+                  <span>Total copies must be at least 1.</span>
+                }
+                @if (editTotalCopies.errors?.['max']) {
+                  <span>Total copies cannot be more than 999.</span>
+                }
+              </div>
+            }
           </div>
 
           <div class="form-group">
@@ -243,9 +472,25 @@
               [(ngModel)]="currentBook.availableCopies" 
               name="availableCopies"
               min="0"
+              max="999"
               required
+              #editAvailableCopies="ngModel"
+              [class.invalid]="editAvailableCopies.invalid && editAvailableCopies.touched"
               class="form-control"
             />
+            @if (editAvailableCopies.invalid && editAvailableCopies.touched) {
+              <div class="error-text">
+                @if (editAvailableCopies.errors?.['required']) {
+                  <span>Available copies is required.</span>
+                }
+                @if (editAvailableCopies.errors?.['min']) {
+                  <span>Available copies cannot be negative.</span>
+                }
+                @if (editAvailableCopies.errors?.['max']) {
+                  <span>Available copies cannot be more than 999.</span>
+                }
+              </div>
+            }
           </div>
         </div>
 
@@ -256,9 +501,19 @@
             id="edit-coverImage" 
             [(ngModel)]="currentBook.coverImage" 
             name="coverImage"
+            pattern="^https://.*$"
+            #editCoverImage="ngModel"
+            [class.invalid]="editCoverImage.invalid && editCoverImage.touched"
             placeholder="https://example.com/book-cover.jpg"
             class="form-control"
           />
+          @if (editCoverImage.invalid && editCoverImage.touched) {
+            <div class="error-text">
+              @if (editCoverImage.errors?.['pattern']) {
+                <span>Please enter a valid URL starting with https://</span>
+              }
+            </div>
+          }
         </div>
 
         <div class="form-actions">
