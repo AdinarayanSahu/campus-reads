@@ -27,15 +27,18 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let userItem of filteredUsers">
-          <td>{{ userItem.id }}</td>
-          <td>{{ userItem.name }}</td>
-          <td>{{ userItem.email }}</td>
-          <td>{{ userItem.gender }}</td>
-        </tr>
-        <tr *ngIf="filteredUsers.length === 0">
-          <td colspan="4" class="no-data">No users found</td>
-        </tr>
+        @for (userItem of filteredUsers; track userItem.id) {
+          <tr>
+            <td>{{ userItem.id }}</td>
+            <td>{{ userItem.name }}</td>
+            <td>{{ userItem.email }}</td>
+            <td>{{ userItem.gender }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4" class="no-data">No users found</td>
+          </tr>
+        }
       </tbody>
     </table>
   </div>
@@ -59,8 +62,25 @@
             [(ngModel)]="currentUser.name" 
             name="name"
             required
+            minlength="3"
+            pattern="^[A-Za-z ]+$"
+            #addUserName="ngModel"
+            [class.invalid]="addUserName.invalid && addUserName.touched"
             class="form-control"
           />
+          @if (addUserName.invalid && addUserName.touched) {
+            <div class="error-text">
+              @if (addUserName.errors?.['required']) {
+                <span>Name is required.</span>
+              }
+              @if (addUserName.errors?.['minlength']) {
+                <span>Name must be at least 3 characters long.</span>
+              }
+              @if (addUserName.errors?.['pattern']) {
+                <span>Name can only contain letters and spaces.</span>
+              }
+            </div>
+          }
         </div>
 
         <div class="form-group">
@@ -71,8 +91,21 @@
             [(ngModel)]="currentUser.email" 
             name="email"
             required
+            email
+            #addUserEmail="ngModel"
+            [class.invalid]="addUserEmail.invalid && addUserEmail.touched"
             class="form-control"
           />
+          @if (addUserEmail.invalid && addUserEmail.touched) {
+            <div class="error-text">
+              @if (addUserEmail.errors?.['required']) {
+                <span>Email is required.</span>
+              }
+              @if (addUserEmail.errors?.['email']) {
+                <span>Please enter a valid email address.</span>
+              }
+            </div>
+          }
         </div>
 
         <div class="form-group">
@@ -82,6 +115,8 @@
             [(ngModel)]="currentUser.gender" 
             name="gender"
             required
+            #addUserGender="ngModel"
+            [class.invalid]="addUserGender.invalid && addUserGender.touched"
             class="form-control"
           >
             <option value="">Select Gender</option>
@@ -89,6 +124,13 @@
             <option value="Female">Female</option>
             <option value="Other">Other</option>
           </select>
+          @if (addUserGender.invalid && addUserGender.touched) {
+            <div class="error-text">
+              @if (addUserGender.errors?.['required']) {
+                <span>Gender is required.</span>
+              }
+            </div>
+          }
         </div>
 
         <div class="form-group">
@@ -99,9 +141,26 @@
             [(ngModel)]="currentUser.password" 
             name="password"
             required
+            minlength="6"
+            pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]+$"
+            #addUserPassword="ngModel"
+            [class.invalid]="addUserPassword.invalid && addUserPassword.touched"
             placeholder="Enter password"
             class="form-control"
           />
+          @if (addUserPassword.invalid && addUserPassword.touched) {
+            <div class="error-text">
+              @if (addUserPassword.errors?.['required']) {
+                <span>Password is required.</span>
+              }
+              @if (addUserPassword.errors?.['minlength']) {
+                <span>Password must be at least 6 characters long.</span>
+              }
+              @if (addUserPassword.errors?.['pattern']) {
+                <span>Password must contain at least one letter and one number.</span>
+              }
+            </div>
+          }
         </div>
 
         <div class="form-actions">

@@ -28,33 +28,37 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let user of filteredUsers">
-          <td>{{ user.id }}</td>
-          <td>{{ user.name }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.gender }}</td>
-          <td class="actions-cell">
-            <button class="btn-edit" (click)="openEditUserForm(user)">
-              Edit
-            </button>
-            <button class="btn-delete" (click)="deleteUser(user)">
-              Delete
-            </button>
-          </td>
-        </tr>
-        <tr *ngIf="filteredUsers.length === 0">
-          <td colspan="5" class="no-data">No users found</td>
-        </tr>
+        @for (user of filteredUsers; track user.id) {
+          <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.gender }}</td>
+            <td class="actions-cell">
+              <button class="btn-edit" (click)="openEditUserForm(user)">
+                Edit
+              </button>
+              <button class="btn-delete" (click)="deleteUser(user)">
+                Delete
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5" class="no-data">No users found</td>
+          </tr>
+        }
       </tbody>
     </table>
   </div>
 
-  <div class="modal" *ngIf="showAddUserForm">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Add New User</h3>
-        <button class="close-btn" (click)="closeAddUserForm()">&times;</button>
-      </div>
+  @if (showAddUserForm) {
+    <div class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Add New User</h3>
+          <button class="close-btn" (click)="closeAddUserForm()">&times;</button>
+        </div>
       <div class="modal-body">
         <form [formGroup]="addUserForm" (ngSubmit)="addUser()">
           <div class="form-group">
@@ -151,14 +155,16 @@
         </form>
       </div>
     </div>
-  </div>
+    </div>
+  }
 
-  <div class="modal" *ngIf="showEditUserForm">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Edit User</h3>
-        <button class="close-btn" (click)="closeEditUserForm()">&times;</button>
-      </div>
+  @if (showEditUserForm) {
+    <div class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Edit User</h3>
+          <button class="close-btn" (click)="closeEditUserForm()">&times;</button>
+        </div>
       <div class="modal-body">
         <form [formGroup]="editUserForm" (ngSubmit)="updateUser()">
           <div class="form-group">
@@ -233,5 +239,6 @@
         </form>
       </div>
     </div>
-  </div>
+    </div>
+  }
 </div>

@@ -2,6 +2,22 @@
   width: 100%;
 }
 
+/* Error message styling for forms */
+.error-text {
+  color: #dc3545;
+  font-size: 13px;
+  margin-top: 4px;
+  margin-bottom: 16px;
+  display: block;
+  padding: 0;
+}
+
+input.invalid,
+select.invalid {
+  border-color: #dc3545;
+  margin-bottom: 0px;
+}
+
 .users-header {
   display: flex;
   justify-content: space-between;
