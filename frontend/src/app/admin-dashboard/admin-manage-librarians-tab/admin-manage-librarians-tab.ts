@@ -1,13 +1,13 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-admin-manage-librarians-tab',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './admin-manage-librarians-tab.html',
   styleUrls: ['./admin-manage-librarians-tab.css']
 })
@@ -19,29 +19,74 @@ export class AdminManageLibrariansTabComponent implements OnInit {
   searchQuery: string = '';
   showAddLibrarianForm: boolean = false;
   showEditLibrarianForm: boolean = false;
-  currentLibrarian: any = {
-    name: '',
-    email: '',
-    password: '',
-    gender: '',
-    role: 'LIBRARIAN'
-  };
+  addLibrarianForm!: FormGroup;
+  editLibrarianForm!: FormGroup;
   selectedLibrarian: any = null;
 
   constructor(
     private userService: UserService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private fb: FormBuilder
+  ) {
+    this.initializeForms();
+  }
 
   ngOnInit() {
     this.loadLibrarians();
+  }
+
+  initializeForms() {
+
+    this.addLibrarianForm = this.fb.group({
+      name: ['', [
+        Validators.required, 
+        Validators.minLength(3),
+        Validators.pattern(/^[a-zA-Z\s]+$/)
+      ]],
+      email: ['', [
+        Validators.required, 
+        Validators.email
+      ]],
+      password: ['', [
+        Validators.required, 
+        Validators.minLength(6),
+        this.passwordStrengthValidator
+      ]],
+      gender: ['', Validators.required]
+    });
+
+    this.editLibrarianForm = this.fb.group({
+      name: ['', [
+        Validators.required, 
+        Validators.minLength(3),
+        Validators.pattern(/^[a-zA-Z\s]+$/)
+      ]],
+      email: ['', [
+        Validators.required, 
+        Validators.email
+      ]],
+      gender: ['', Validators.required]
+    });
+  }
+
+  passwordStrengthValidator(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+    if (!value) {
+      return null;
+    }
+
+    const hasNumber = /[0-9]/.test(value);
+    const hasLetter = /[a-zA-Z]/.test(value);
+
+    const passwordValid = hasNumber && hasLetter;
+
+    return !passwordValid ? { passwordStrength: true } : null;
   }
 
   loadLibrarians() {
     this.userService.getAllUsers().subscribe({
       next: (response) => {
         console.log('Users loaded:', response);
-        // Filter only librarians
         this.librarians = response.filter((user: any) => 
           user.role && user.role.toUpperCase() === 'LIBRARIAN'
         );
@@ -70,37 +115,28 @@ export class AdminManageLibrariansTabComponent implements OnInit {
 
   openAddLibrarianForm() {
     this.showAddLibrarianForm = true;
-    this.currentLibrarian = {
-      name: '',
-      email: '',
-      password: '',
-      gender: '',
-      role: 'LIBRARIAN'
-    };
+    this.addLibrarianForm.reset();
   }
 
   closeAddLibrarianForm() {
     this.showAddLibrarianForm = false;
-    this.currentLibrarian = {
-      name: '',
-      email: '',
-      password: '',
-      gender: '',
-      role: 'LIBRARIAN'
-    };
+    this.addLibrarianForm.reset();
   }
 
   addLibrarian() {
-    if (!this.currentLibrarian.name || !this.currentLibrarian.email || !this.currentLibrarian.password || !this.currentLibrarian.gender) {
-      alert('Please fill all required fields');
+    if (this.addLibrarianForm.invalid) {
+      Object.keys(this.addLibrarianForm.controls).forEach(key => {
+        this.addLibrarianForm.get(key)?.markAsTouched();
+      });
+      alert('Please fill all required fields correctly');
       return;
     }
 
     const librarianData = {
-      name: this.currentLibrarian.name,
-      email: this.currentLibrarian.email,
-      password: this.currentLibrarian.password,
-      gender: this.currentLibrarian.gender,
+      name: this.addLibrarianForm.value.name,
+      email: this.addLibrarianForm.value.email,
+      password: this.addLibrarianForm.value.password,
+      gender: this.addLibrarianForm.value.gender,
       role: 'LIBRARIAN'
     };
 
@@ -128,24 +164,33 @@ export class AdminManageLibrariansTabComponent implements OnInit {
 
   openEditLibrarianForm(librarian: any) {
     this.selectedLibrarian = { ...librarian };
+    this.editLibrarianForm.patchValue({
+      name: librarian.name,
+      email: librarian.email,
+      gender: librarian.gender
+    });
     this.showEditLibrarianForm = true;
   }
 
   closeEditLibrarianForm() {
     this.showEditLibrarianForm = false;
     this.selectedLibrarian = null;
+    this.editLibrarianForm.reset();
   }
 
   updateLibrarian() {
-    if (!this.selectedLibrarian.name || !this.selectedLibrarian.email || !this.selectedLibrarian.gender) {
-      alert('Please fill all required fields');
+    if (this.editLibrarianForm.invalid) {
+      Object.keys(this.editLibrarianForm.controls).forEach(key => {
+        this.editLibrarianForm.get(key)?.markAsTouched();
+      });
+      alert('Please fill all required fields correctly');
       return;
     }
 
     const updatedData = {
-      name: this.selectedLibrarian.name,
-      email: this.selectedLibrarian.email,
-      gender: this.selectedLibrarian.gender,
+      name: this.editLibrarianForm.value.name,
+      email: this.editLibrarianForm.value.email,
+      gender: this.editLibrarianForm.value.gender,
       role: 'LIBRARIAN'
     };
 
@@ -183,5 +228,40 @@ export class AdminManageLibrariansTabComponent implements OnInit {
         }
       });
     }
+  }
+
+  getErrorMessage(formGroup: FormGroup, fieldName: string): string {
+    const control = formGroup.get(fieldName);
+    if (!control || !control.touched || !control.errors) {
+      return '';
+    }
+
+    if (control.errors['required']) {
+      return `${fieldName} is required`;
+    }
+
+    if (control.errors['minlength']) {
+      const requiredLength = control.errors['minlength'].requiredLength;
+      return `${fieldName} must be at least ${requiredLength} characters`;
+    }
+
+    if (control.errors['pattern']) {
+      return `${fieldName} should only contain letters and spaces`;
+    }
+
+    if (control.errors['email']) {
+      return 'Please enter a valid email';
+    }
+
+    if (control.errors['passwordStrength']) {
+      return 'Password must contain both letters and numbers';
+    }
+    
+    return '';
+  }
+
+  isFieldInvalid(formGroup: FormGroup, fieldName: string): boolean {
+    const control = formGroup.get(fieldName);
+    return !!(control && control.invalid && control.touched);
   }
 }

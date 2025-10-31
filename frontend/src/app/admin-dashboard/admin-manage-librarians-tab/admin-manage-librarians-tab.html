@@ -56,56 +56,58 @@
         <button class="close-btn" (click)="closeAddLibrarianForm()">&times;</button>
       </div>
       <div class="modal-body">
-        <form (ngSubmit)="addLibrarian()">
+        <form [formGroup]="addLibrarianForm" (ngSubmit)="addLibrarian()">
           <div class="form-group">
-            <label for="name">Name *</label>
-            <input
-              type="text"
-              id="name"
-              [(ngModel)]="currentLibrarian.name"
-              name="name"
-              required
-            />
+              <label>Full Name</label>
+              <input type="text" formControlName="name" [class.error]="isFieldInvalid(addLibrarianForm, 'name')" placeholder="Enter your full name">
+              <span class="error-message" *ngIf="isFieldInvalid(addLibrarianForm, 'name')">
+                <ng-container *ngIf="addLibrarianForm.get('name')?.errors as errors">
+                  <span *ngIf="errors['required']">Name is required.</span>
+                  <span *ngIf="errors['minlength']">Name must be at least 3 characters long.</span>
+                  <span *ngIf="errors['pattern']">Name can only contain letters and spaces.</span>
+                </ng-container>
+              </span>
           </div>
           <div class="form-group">
-            <label for="email">Email *</label>
-            <input
-              type="email"
-              id="email"
-              [(ngModel)]="currentLibrarian.email"
-              name="email"
-              required
-            />
+              <label>Email</label>
+              <input type="email" formControlName="email" [class.error]="isFieldInvalid(addLibrarianForm, 'email')" placeholder="Enter your email">
+              <span class="error-message" *ngIf="isFieldInvalid(addLibrarianForm, 'email')">
+                <ng-container *ngIf="addLibrarianForm.get('email')?.errors as errors">
+                  <span *ngIf="errors['required']">Email is required.</span>
+                  <span *ngIf="errors['email']">Please enter a valid email address.</span>
+                </ng-container>
+              </span>
           </div>
           <div class="form-group">
-            <label for="gender">Gender *</label>
-            <select
-              id="gender"
-              [(ngModel)]="currentLibrarian.gender"
-              name="gender"
-              required
-            >
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
+              <label>Gender</label>
+              <select formControlName="gender" [class.error]="isFieldInvalid(addLibrarianForm, 'gender')">
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+              <span class="error-message" *ngIf="isFieldInvalid(addLibrarianForm, 'gender')">
+                <ng-container *ngIf="addLibrarianForm.get('gender')?.errors as errors">
+                  <span *ngIf="errors['required']">Gender is required.</span>
+                </ng-container>
+              </span>
           </div>
           <div class="form-group">
-            <label for="password">Password *</label>
-            <input
-              type="password"
-              id="password"
-              [(ngModel)]="currentLibrarian.password"
-              name="password"
-              required
-            />
+              <label>Password</label>
+              <input type="password" formControlName="password" [class.error]="isFieldInvalid(addLibrarianForm, 'password')" placeholder="Enter your password">
+              <span class="error-message" *ngIf="isFieldInvalid(addLibrarianForm, 'password')">
+                <ng-container *ngIf="addLibrarianForm.get('password')?.errors as errors">
+                  <span *ngIf="errors['required']">Password is required.</span>
+                  <span *ngIf="errors['minlength']">Password must be at least 6 characters long.</span>
+                  <span *ngIf="errors['passwordStrength']">Password must contain at least one letter and one number.</span>
+                </ng-container>
+              </span>
           </div>
           <div class="form-actions">
             <button type="button" class="btn-cancel" (click)="closeAddLibrarianForm()">
               Cancel
             </button>
-            <button type="submit" class="btn-primary">
+            <button type="submit" class="btn-primary" [disabled]="addLibrarianForm.invalid">
               Add Librarian
             </button>
           </div>
@@ -121,40 +123,41 @@
         <button class="close-btn" (click)="closeEditLibrarianForm()">&times;</button>
       </div>
       <div class="modal-body">
-        <form (ngSubmit)="updateLibrarian()">
+        <form [formGroup]="editLibrarianForm" (ngSubmit)="updateLibrarian()">
           <div class="form-group">
-            <label for="edit-name">Name *</label>
-            <input
-              type="text"
-              id="edit-name"
-              [(ngModel)]="selectedLibrarian.name"
-              name="name"
-              required
-            />
+              <label>Full Name</label>
+              <input type="text" formControlName="name" [class.error]="isFieldInvalid(editLibrarianForm, 'name')" placeholder="Enter your full name">
+              <span class="error-message" *ngIf="isFieldInvalid(editLibrarianForm, 'name')">
+                <ng-container *ngIf="editLibrarianForm.get('name')?.errors as errors">
+                  <span *ngIf="errors['required']">Name is required.</span>
+                  <span *ngIf="errors['minlength']">Name must be at least 3 characters long.</span>
+                  <span *ngIf="errors['pattern']">Name can only contain letters and spaces.</span>
+                </ng-container>
+              </span>
           </div>
           <div class="form-group">
-            <label for="edit-email">Email *</label>
-            <input
-              type="email"
-              id="edit-email"
-              [(ngModel)]="selectedLibrarian.email"
-              name="email"
-              required
-            />
+              <label>Email</label>
+              <input type="email" formControlName="email" [class.error]="isFieldInvalid(editLibrarianForm, 'email')" placeholder="Enter your email">
+              <span class="error-message" *ngIf="isFieldInvalid(editLibrarianForm, 'email')">
+                <ng-container *ngIf="editLibrarianForm.get('email')?.errors as errors">
+                  <span *ngIf="errors['required']">Email is required.</span>
+                  <span *ngIf="errors['email']">Please enter a valid email address.</span>
+                </ng-container>
+              </span>
           </div>
           <div class="form-group">
-            <label for="edit-gender">Gender *</label>
-            <select
-              id="edit-gender"
-              [(ngModel)]="selectedLibrarian.gender"
-              name="gender"
-              required
-            >
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
+              <label>Gender</label>
+              <select formControlName="gender" [class.error]="isFieldInvalid(editLibrarianForm, 'gender')">
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+              <span class="error-message" *ngIf="isFieldInvalid(editLibrarianForm, 'gender')">
+                <ng-container *ngIf="editLibrarianForm.get('gender')?.errors as errors">
+                  <span *ngIf="errors['required']">Gender is required.</span>
+                </ng-container>
+              </span>
           </div>
           <div class="form-group">
             <label>Password</label>
@@ -170,7 +173,7 @@
             <button type="button" class="btn-cancel" (click)="closeEditLibrarianForm()">
               Cancel
             </button>
-            <button type="submit" class="btn-primary">
+            <button type="submit" class="btn-primary" [disabled]="editLibrarianForm.invalid">
               Update Librarian
             </button>
           </div>
