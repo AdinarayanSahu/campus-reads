@@ -91,14 +91,16 @@
             <span class="label">Returned:</span>
             <span class="value">{{ formatDate(borrow.returnDate) }}</span>
           </div>
-          <div class="detail-item" *ngIf="borrow.status === 'REJECTED' && borrow.rejectionReason">
-            <span class="label">Reason:</span>
-            <span class="value rejection-reason">{{ borrow.rejectionReason }}</span>
-          </div>
         </div>
 
         <div class="borrow-status" [ngClass]="getStatusClass(borrow)">
           <span class="status-badge">{{ getStatusText(borrow) }}</span>
+          <ng-container *ngIf="borrow.status === 'REJECTED' && borrow.rejectionReason">
+            <div class="rejection-inline" style="margin-top:0.3rem;">
+              <span class="label">Rejection Reason:</span>
+              <span class="value rejection-reason">{{ borrow.rejectionReason }}</span>
+            </div>
+          </ng-container>
           <span class="days-info" *ngIf="canReturn(borrow) && !isOverdue(borrow)">
             {{ getDaysUntilDue(borrow) }} days remaining
           </span>

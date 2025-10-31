@@ -27,4 +27,5 @@ public class BorrowResponse {
     private Boolean isOverdue;
     private Long daysUntilDue;
     private Long daysOverdue;
+    private String rejectionReason;
 }

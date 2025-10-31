@@ -145,8 +145,8 @@
             name="isbn"
             required
             minlength="10"
-            maxlength="17"
-            pattern="^[0-9A-Za-z-]+$"
+            
+            pattern="^[0-9]+$"
             #isbn="ngModel"
             [class.invalid]="isbn.invalid && isbn.touched"
             class="form-control"
@@ -154,16 +154,14 @@
         @if (isbn.invalid && isbn.touched) {
           <div class="error-text">
             @if (isbn.errors?.['required']) {
-              <span>ISBN is required.</span>
+              <div><span>ISBN is required.</span></div>
             }
             @if (isbn.errors?.['minlength']) {
-              <span>ISBN must be at least 10 characters.</span>
+              <div><span>ISBN must be at least 10 characters.</span></div>
             }
-            @if (isbn.errors?.['maxlength']) {
-              <span>ISBN cannot be more than 17 characters.</span>
-            }
+            
             @if (isbn.errors?.['pattern']) {
-              <span>ISBN must be alphanumeric and can include dashes.</span>
+              <div><span>ISBN must contain only numbers.</span></div>
             }
           </div>
         }
@@ -377,8 +375,8 @@
             name="isbn"
             required
             minlength="10"
-            maxlength="17"
-            pattern="^[0-9A-Za-z-]+$"
+            
+            pattern="^[0-9]+$"
             #editIsbn="ngModel"
             [class.invalid]="editIsbn.invalid && editIsbn.touched"
             class="form-control"
@@ -386,16 +384,14 @@
         @if (editIsbn.invalid && editIsbn.touched) {
           <div class="error-text">
             @if (editIsbn.errors?.['required']) {
-              <span>ISBN is required.</span>
+              <div><span>ISBN is required.</span></div>
             }
             @if (editIsbn.errors?.['minlength']) {
-              <span>ISBN must be at least 10 characters.</span>
+              <div><span>ISBN must be at least 10 characters.</span></div>
             }
-            @if (editIsbn.errors?.['maxlength']) {
-              <span>ISBN cannot be more than 17 characters.</span>
-            }
+            
             @if (editIsbn.errors?.['pattern']) {
-              <span>ISBN must be alphanumeric and can include dashes.</span>
+              <div><span>ISBN must contain only numbers.</span></div>
             }
           </div>
         }

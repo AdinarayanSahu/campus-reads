@@ -308,6 +308,7 @@ public class BorrowService {
         response.setReturnDate(record.getReturnDate());
         response.setStatus(record.getStatus());
         response.setFineAmount(record.getFineAmount());
+        response.setRejectionReason(record.getRejectionReason());
 
         LocalDateTime now = LocalDateTime.now();
         if (record.getReturnDate() == null) {

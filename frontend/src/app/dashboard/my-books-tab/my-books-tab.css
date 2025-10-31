@@ -198,9 +198,24 @@
   font-weight: 600;
 }
 
+
+
+
+.rejection-inline {
+  background-color: #ffebee;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  margin-top: 0.7rem;
+  margin-left: 0;
+  display: inline-block;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(244,67,54,0.07);
+}
+
 .rejection-reason {
   color: #f44336;
   font-style: italic;
+  font-weight: 500;
 }
 
 .borrow-status {
