@@ -9,7 +9,7 @@
         <span>Name is required.</span>
       }
       @if (f['name'].errors?.['minlength']) {
-        <span>Name must be at least 2 characters long.</span>
+        <span>Name must be at least 3 characters long.</span>
       }
       @if (f['name'].errors?.['pattern']) {
         <span>Name can only contain letters and spaces.</span>

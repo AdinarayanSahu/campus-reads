@@ -101,6 +101,20 @@ tbody tr:hover {
   color: white;
 }
 
+/* Validation error styles */
+.error-text {
+  color: #dc3545;
+  font-size: 13px;
+  margin-top: 4px;
+  margin-bottom: 16px;
+  display: block;
+  padding: 0;
+}
+
+input.invalid, select.invalid {
+  border-color: #dc3545;
+}
+
 .actions-cell {
   display: flex;
   gap: 10px;

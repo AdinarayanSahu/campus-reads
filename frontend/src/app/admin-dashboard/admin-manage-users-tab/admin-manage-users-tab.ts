@@ -1,5 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
@@ -7,7 +8,7 @@ import { UserService } from '../../services/user.service';
 @Component({
   selector: 'app-admin-manage-users-tab',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './admin-manage-users-tab.html',
   styleUrls: ['./admin-manage-users-tab.css']
 })
@@ -19,24 +20,58 @@ export class AdminManageUsersTabComponent implements OnInit {
   searchQuery: string = '';
   showAddUserForm: boolean = false;
   showEditUserForm: boolean = false;
-  currentUser: any = {
-    name: '',
-    email: '',
-    password: '',
-    gender: '',
-    role: 'USER'
-  };
+  addUserForm!: FormGroup;
+  editUserForm!: FormGroup;
   selectedUser: any = null;
 
   constructor(
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit() {
+    this.initializeForms();
     if (typeof window !== 'undefined') {
       this.loadUsers();
     }
+  }
+
+  initializeForms() {
+    this.addUserForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-zA-Z\s]+$/)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6), this.passwordStrengthValidator]],
+      gender: ['', [Validators.required]]
+    });
+
+    this.editUserForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-zA-Z\s]+$/)]],
+      email: ['', [Validators.required, Validators.email]],
+      gender: ['', [Validators.required]]
+    });
+  }
+
+  passwordStrengthValidator(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+    if (!value) {
+      return null;
+    }
+
+    const hasNumber = /[0-9]/.test(value);
+    const hasLetter = /[a-zA-Z]/.test(value);
+
+    const passwordValid = hasNumber && hasLetter;
+
+    return !passwordValid ? { passwordStrength: true } : null;
+  }
+
+  get addFormFields() {
+    return this.addUserForm.controls;
+  }
+
+  get editFormFields() {
+    return this.editUserForm.controls;
   }
 
   loadUsers() {
@@ -45,7 +80,6 @@ export class AdminManageUsersTabComponent implements OnInit {
       next: (response) => {
         console.log('All users loaded:', response);
         console.log('Number of all users:', response.length);
-        // Filter only regular users (not admin or librarian)
         this.users = response.filter((user: any) => 
           user.role && user.role.toUpperCase() === 'USER'
         );
@@ -78,39 +112,29 @@ export class AdminManageUsersTabComponent implements OnInit {
 
   openAddUserForm() {
     this.showAddUserForm = true;
-    this.currentUser = {
+    this.addUserForm.reset({
       name: '',
       email: '',
       password: '',
-      gender: '',
-      role: 'USER'
-    };
+      gender: ''
+    });
   }
 
   closeAddUserForm() {
     this.showAddUserForm = false;
-    this.currentUser = {
-      name: '',
-      email: '',
-      password: '',
-      gender: '',
-      role: 'USER'
-    };
+    this.addUserForm.reset();
   }
 
   addUser() {
-    if (!this.currentUser.name || !this.currentUser.email || !this.currentUser.password || !this.currentUser.gender) {
-      if (typeof window !== 'undefined') {
-        alert('Please fill all required fields');
-      }
+    if (this.addUserForm.invalid) {
+      Object.keys(this.addUserForm.controls).forEach(key => {
+        this.addUserForm.controls[key].markAsTouched();
+      });
       return;
     }
 
     const userData = {
-      name: this.currentUser.name,
-      email: this.currentUser.email,
-      password: this.currentUser.password,
-      gender: this.currentUser.gender,
+      ...this.addUserForm.value,
       role: 'USER'
     };
 
@@ -142,26 +166,30 @@ export class AdminManageUsersTabComponent implements OnInit {
 
   openEditUserForm(user: any) {
     this.selectedUser = { ...user };
+    this.editUserForm.patchValue({
+      name: user.name,
+      email: user.email,
+      gender: user.gender
+    });
     this.showEditUserForm = true;
   }
 
   closeEditUserForm() {
     this.showEditUserForm = false;
     this.selectedUser = null;
+    this.editUserForm.reset();
   }
 
   updateUser() {
-    if (!this.selectedUser.name || !this.selectedUser.email || !this.selectedUser.gender) {
-      if (typeof window !== 'undefined') {
-        alert('Please fill all required fields');
-      }
+    if (this.editUserForm.invalid) {
+      Object.keys(this.editUserForm.controls).forEach(key => {
+        this.editUserForm.controls[key].markAsTouched();
+      });
       return;
     }
 
     const updatedData = {
-      name: this.selectedUser.name,
-      email: this.selectedUser.email,
-      gender: this.selectedUser.gender,
+      ...this.editUserForm.value,
       role: 'USER'
     };
 

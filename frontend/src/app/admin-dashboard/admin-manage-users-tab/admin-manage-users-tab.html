@@ -56,50 +56,89 @@
         <button class="close-btn" (click)="closeAddUserForm()">&times;</button>
       </div>
       <div class="modal-body">
-        <form (ngSubmit)="addUser()">
+        <form [formGroup]="addUserForm" (ngSubmit)="addUser()">
           <div class="form-group">
             <label for="name">Name *</label>
             <input
               type="text"
               id="name"
-              [(ngModel)]="currentUser.name"
-              name="name"
-              required
+              formControlName="name"
+              [class.invalid]="addFormFields['name'].invalid && addFormFields['name'].touched"
             />
+            @if (addFormFields['name'].invalid && addFormFields['name'].touched) {
+              <div class="error-text">
+                @if (addFormFields['name'].errors?.['required']) {
+                  <span>Name is required.</span>
+                }
+                @if (addFormFields['name'].errors?.['minlength']) {
+                  <span>Name must be at least 3 characters long.</span>
+                }
+                @if (addFormFields['name'].errors?.['pattern']) {
+                  <span>Name can only contain letters and spaces.</span>
+                }
+              </div>
+            }
           </div>
           <div class="form-group">
             <label for="email">Email *</label>
             <input
               type="email"
               id="email"
-              [(ngModel)]="currentUser.email"
-              name="email"
-              required
+              formControlName="email"
+              [class.invalid]="addFormFields['email'].invalid && addFormFields['email'].touched"
             />
+            @if (addFormFields['email'].invalid && addFormFields['email'].touched) {
+              <div class="error-text">
+                @if (addFormFields['email'].errors?.['required']) {
+                  <span>Email is required.</span>
+                }
+                @if (addFormFields['email'].errors?.['email']) {
+                  <span>Please enter a valid email address.</span>
+                }
+              </div>
+            }
           </div>
           <div class="form-group">
             <label for="gender">Gender *</label>
             <select
               id="gender"
-              [(ngModel)]="currentUser.gender"
-              name="gender"
-              required
+              formControlName="gender"
+              [class.invalid]="addFormFields['gender'].invalid && addFormFields['gender'].touched"
             >
               <option value="">Select Gender</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
               <option value="Other">Other</option>
             </select>
+            @if (addFormFields['gender'].invalid && addFormFields['gender'].touched) {
+              <div class="error-text">
+                @if (addFormFields['gender'].errors?.['required']) {
+                  <span>Gender is required.</span>
+                }
+              </div>
+            }
           </div>
           <div class="form-group">
             <label for="password">Password *</label>
             <input
               type="password"
               id="password"
-              [(ngModel)]="currentUser.password"
-              name="password"
-              required
+              formControlName="password"
+              [class.invalid]="addFormFields['password'].invalid && addFormFields['password'].touched"
             />
+            @if (addFormFields['password'].invalid && addFormFields['password'].touched) {
+              <div class="error-text">
+                @if (addFormFields['password'].errors?.['required']) {
+                  <span>Password is required.</span>
+                }
+                @if (addFormFields['password'].errors?.['minlength']) {
+                  <span>Password must be at least 6 characters long.</span>
+                }
+                @if (addFormFields['password'].errors?.['passwordStrength']) {
+                  <span>Password must contain at least one letter and one number.</span>
+                }
+              </div>
+            }
           </div>
           <div class="form-actions">
             <button type="button" class="btn-cancel" (click)="closeAddUserForm()">
@@ -121,40 +160,67 @@
         <button class="close-btn" (click)="closeEditUserForm()">&times;</button>
       </div>
       <div class="modal-body">
-        <form (ngSubmit)="updateUser()">
+        <form [formGroup]="editUserForm" (ngSubmit)="updateUser()">
           <div class="form-group">
             <label for="edit-name">Name *</label>
             <input
               type="text"
               id="edit-name"
-              [(ngModel)]="selectedUser.name"
-              name="name"
-              required
+              formControlName="name"
+              [class.invalid]="editFormFields['name'].invalid && editFormFields['name'].touched"
             />
+            @if (editFormFields['name'].invalid && editFormFields['name'].touched) {
+              <div class="error-text">
+                @if (editFormFields['name'].errors?.['required']) {
+                  <span>Name is required.</span>
+                }
+                @if (editFormFields['name'].errors?.['minlength']) {
+                  <span>Name must be at least 3 characters long.</span>
+                }
+                @if (editFormFields['name'].errors?.['pattern']) {
+                  <span>Name can only contain letters and spaces.</span>
+                }
+              </div>
+            }
           </div>
           <div class="form-group">
             <label for="edit-email">Email *</label>
             <input
               type="email"
               id="edit-email"
-              [(ngModel)]="selectedUser.email"
-              name="email"
-              required
+              formControlName="email"
+              [class.invalid]="editFormFields['email'].invalid && editFormFields['email'].touched"
             />
+            @if (editFormFields['email'].invalid && editFormFields['email'].touched) {
+              <div class="error-text">
+                @if (editFormFields['email'].errors?.['required']) {
+                  <span>Email is required.</span>
+                }
+                @if (editFormFields['email'].errors?.['email']) {
+                  <span>Please enter a valid email address.</span>
+                }
+              </div>
+            }
           </div>
           <div class="form-group">
             <label for="edit-gender">Gender *</label>
             <select
               id="edit-gender"
-              [(ngModel)]="selectedUser.gender"
-              name="gender"
-              required
+              formControlName="gender"
+              [class.invalid]="editFormFields['gender'].invalid && editFormFields['gender'].touched"
             >
               <option value="">Select Gender</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
               <option value="Other">Other</option>
             </select>
+            @if (editFormFields['gender'].invalid && editFormFields['gender'].touched) {
+              <div class="error-text">
+                @if (editFormFields['gender'].errors?.['required']) {
+                  <span>Gender is required.</span>
+                }
+              </div>
+            }
           </div>
           <div class="form-actions">
             <button type="button" class="btn-cancel" (click)="closeEditUserForm()">
