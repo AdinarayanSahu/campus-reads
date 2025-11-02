@@ -145,8 +145,8 @@
             name="isbn"
             required
             minlength="10"
-            maxlength="17"
-            pattern="^[0-9A-Za-z-]+$"
+            maxlength="13"
+            pattern="^(\d{10}|\d{13})$"
             #isbn="ngModel"
             [class.invalid]="isbn.invalid && isbn.touched"
             class="form-control"
@@ -156,14 +156,11 @@
               @if (isbn.errors?.['required']) {
                 <span>ISBN is required.</span>
               }
-              @if (isbn.errors?.['minlength']) {
-                <span>ISBN must be at least 10 characters.</span>
+              @if (isbn.errors?.['pattern'] && isIsbnNotNumeric(currentBook.isbn)) {
+                <span>ISBN must contain only numbers.</span>
               }
-              @if (isbn.errors?.['maxlength']) {
-                <span>ISBN cannot be more than 17 characters.</span>
-              }
-              @if (isbn.errors?.['pattern']) {
-                <span>ISBN must be alphanumeric and can include dashes.</span>
+              @if (isbn.errors?.['pattern'] && !isIsbnNotNumeric(currentBook.isbn)) {
+                <span>ISBN must be exactly 10 or 13 digits.</span>
               }
             </div>
           }

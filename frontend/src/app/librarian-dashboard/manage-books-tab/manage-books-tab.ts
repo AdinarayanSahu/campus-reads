@@ -12,6 +12,9 @@ import { BookService } from '../../services/book.service';
   styleUrls: ['./manage-books-tab.css']
 })
 export class ManageBooksTabComponent implements OnInit {
+  isIsbnNotNumeric(isbn: string): boolean {
+    return !!isbn && !/^\d+$/.test(isbn);
+  }
   @Output() bookCountUpdated = new EventEmitter<number>();
 
   books: any[] = [];

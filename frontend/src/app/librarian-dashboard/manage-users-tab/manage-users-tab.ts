@@ -22,6 +22,7 @@ export class ManageUsersTabComponent implements OnInit {
     name: '',
     email: '',
     gender: '',
+    mobile: '',
     role: 'USER',
     password: ''
   };
@@ -78,6 +79,7 @@ export class ManageUsersTabComponent implements OnInit {
       name: '',
       email: '',
       gender: '',
+      mobile: '',
       role: 'USER',
       password: ''
     };
@@ -89,6 +91,7 @@ export class ManageUsersTabComponent implements OnInit {
       name: '',
       email: '',
       gender: '',
+      mobile: '',
       role: 'USER',
       password: ''
     };
@@ -108,6 +111,7 @@ export class ManageUsersTabComponent implements OnInit {
       name: this.currentUser.name,
       email: this.currentUser.email,
       gender: this.currentUser.gender,
+      mobile: this.currentUser.mobile,
       password: this.currentUser.password,
       role: 'USER'
     };

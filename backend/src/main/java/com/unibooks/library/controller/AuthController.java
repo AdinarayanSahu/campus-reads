@@ -34,13 +34,14 @@ public class AuthController {
                 user.getName(),
                 user.getEmail(),
                 user.getGender(),
+                user.getMobile(),
                 user.getRole().name(),
                 token
             );
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new AuthResponse(e.getMessage(), null, null, null, null, null, null));
+                .body(new AuthResponse(e.getMessage(), null, null, null, null, null, null, null));
         }
     }
 
@@ -55,13 +56,14 @@ public class AuthController {
                 user.getName(),
                 user.getEmail(),
                 user.getGender(),
+                user.getMobile(),
                 user.getRole().name(),
                 token
             );
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new AuthResponse(e.getMessage(), null, null, null, null, null, null));
+                .body(new AuthResponse(e.getMessage(), null, null, null, null, null, null, null));
         }
     }
     
@@ -69,7 +71,7 @@ public class AuthController {
     public ResponseEntity<?> logout() {
         // Clear security context
         SecurityContextHolder.clearContext();
-        return ResponseEntity.ok().body(new AuthResponse("Logout successful", null, null, null, null, null, null));
+        return ResponseEntity.ok().body(new AuthResponse("Logout successful", null, null, null, null, null, null, null));
     }
     
     @GetMapping("/validate")
@@ -87,6 +89,7 @@ public class AuthController {
                         null,
                         email,
                         null,
+                        null,
                         role,
                         token
                     );
@@ -94,10 +97,10 @@ public class AuthController {
                 }
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new AuthResponse("Invalid or expired session", null, null, null, null, null, null));
+                .body(new AuthResponse("Invalid or expired session", null, null, null, null, null, null, null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new AuthResponse("Session validation failed", null, null, null, null, null, null));
+                .body(new AuthResponse("Session validation failed", null, null, null, null, null, null, null));
         }
     }
     
@@ -117,16 +120,17 @@ public class AuthController {
                     null,
                     email,
                     null,
+                    null,
                     role,
                     newToken
                 );
                 return ResponseEntity.ok(response);
             }
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new AuthResponse("Invalid token", null, null, null, null, null, null));
+                .body(new AuthResponse("Invalid token", null, null, null, null, null, null, null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new AuthResponse("Token refresh failed", null, null, null, null, null, null));
+                .body(new AuthResponse("Token refresh failed", null, null, null, null, null, null, null));
         }
     }
     

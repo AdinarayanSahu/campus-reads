@@ -145,8 +145,9 @@
             name="isbn"
             required
             minlength="10"
-            
-            pattern="^[0-9]+$"
+            maxlength="13"
+            pattern="^(\d{10}|\d{13})$"
+            ng-pattern="/^\d+$/"
             #isbn="ngModel"
             [class.invalid]="isbn.invalid && isbn.touched"
             class="form-control"
@@ -156,12 +157,11 @@
             @if (isbn.errors?.['required']) {
               <div><span>ISBN is required.</span></div>
             }
-            @if (isbn.errors?.['minlength']) {
-              <div><span>ISBN must be at least 10 characters.</span></div>
-            }
-            
-            @if (isbn.errors?.['pattern']) {
+            @if (isbn.errors?.['pattern'] && isIsbnNotNumeric(currentBook.isbn)) {
               <div><span>ISBN must contain only numbers.</span></div>
+            }
+            @if (isbn.errors?.['pattern'] && !isIsbnNotNumeric(currentBook.isbn)) {
+              <div><span>ISBN must be exactly 10 or 13 digits.</span></div>
             }
           </div>
         }

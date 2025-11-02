@@ -24,6 +24,7 @@
           <th>Name</th>
           <th>Email</th>
           <th>Gender</th>
+          <th>Mobile</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -34,6 +35,7 @@
             <td>{{ user.name }}</td>
             <td>{{ user.email }}</td>
             <td>{{ user.gender }}</td>
+            <td>{{ user.mobile }}</td>
             <td class="actions-cell">
               <button class="btn-edit" (click)="openEditUserForm(user)">
                 Edit
@@ -45,7 +47,7 @@
           </tr>
         } @empty {
           <tr>
-            <td colspan="5" class="no-data">No users found</td>
+            <td colspan="6" class="no-data">No users found</td>
           </tr>
         }
       </tbody>
@@ -118,6 +120,26 @@
               <div class="error-text">
                 @if (addFormFields['gender'].errors?.['required']) {
                   <span>Gender is required.</span>
+                }
+              </div>
+            }
+          </div>
+          <div class="form-group">
+            <label for="mobile">Mobile Number *</label>
+            <input
+              type="tel"
+              id="mobile"
+              formControlName="mobile"
+              placeholder="Enter 10-digit mobile number"
+              [class.invalid]="addFormFields['mobile'].invalid && addFormFields['mobile'].touched"
+            />
+            @if (addFormFields['mobile'].invalid && addFormFields['mobile'].touched) {
+              <div class="error-text">
+                @if (addFormFields['mobile'].errors?.['required']) {
+                  <span>Mobile number is required.</span>
+                }
+                @if (addFormFields['mobile'].errors?.['pattern']) {
+                  <span>Please enter a valid 10-digit mobile number.</span>
                 }
               </div>
             }
@@ -224,6 +246,26 @@
               <div class="error-text">
                 @if (editFormFields['gender'].errors?.['required']) {
                   <span>Gender is required.</span>
+                }
+              </div>
+            }
+          </div>
+          <div class="form-group">
+            <label for="edit-mobile">Mobile Number *</label>
+            <input
+              type="tel"
+              id="edit-mobile"
+              formControlName="mobile"
+              placeholder="Enter 10-digit mobile number"
+              [class.invalid]="editFormFields['mobile'].invalid && editFormFields['mobile'].touched"
+            />
+            @if (editFormFields['mobile'].invalid && editFormFields['mobile'].touched) {
+              <div class="error-text">
+                @if (editFormFields['mobile'].errors?.['required']) {
+                  <span>Mobile number is required.</span>
+                }
+                @if (editFormFields['mobile'].errors?.['pattern']) {
+                  <span>Please enter a valid 10-digit mobile number.</span>
                 }
               </div>
             }

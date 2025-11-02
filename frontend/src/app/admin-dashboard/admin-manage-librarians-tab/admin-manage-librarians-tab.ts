@@ -52,7 +52,8 @@ export class AdminManageLibrariansTabComponent implements OnInit {
         Validators.minLength(6),
         this.passwordStrengthValidator
       ]],
-      gender: ['', Validators.required]
+      gender: ['', Validators.required],
+      mobile: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]]
     });
 
     this.editLibrarianForm = this.fb.group({
@@ -65,7 +66,8 @@ export class AdminManageLibrariansTabComponent implements OnInit {
         Validators.required, 
         Validators.email
       ]],
-      gender: ['', Validators.required]
+      gender: ['', Validators.required],
+      mobile: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]]
     });
   }
 
@@ -137,6 +139,7 @@ export class AdminManageLibrariansTabComponent implements OnInit {
       email: this.addLibrarianForm.value.email,
       password: this.addLibrarianForm.value.password,
       gender: this.addLibrarianForm.value.gender,
+      mobile: this.addLibrarianForm.value.mobile,
       role: 'LIBRARIAN'
     };
 
@@ -167,7 +170,8 @@ export class AdminManageLibrariansTabComponent implements OnInit {
     this.editLibrarianForm.patchValue({
       name: librarian.name,
       email: librarian.email,
-      gender: librarian.gender
+      gender: librarian.gender,
+      mobile: librarian.mobile
     });
     this.showEditLibrarianForm = true;
   }
@@ -191,6 +195,7 @@ export class AdminManageLibrariansTabComponent implements OnInit {
       name: this.editLibrarianForm.value.name,
       email: this.editLibrarianForm.value.email,
       gender: this.editLibrarianForm.value.gender,
+      mobile: this.editLibrarianForm.value.mobile,
       role: 'LIBRARIAN'
     };
 

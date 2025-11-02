@@ -24,6 +24,7 @@
           <th>Name</th>
           <th>Email</th>
           <th>Gender</th>
+           <th>Mobile</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -33,17 +34,14 @@
           <td>{{ librarian.name }}</td>
           <td>{{ librarian.email }}</td>
           <td>{{ librarian.gender }}</td>
+          <td>{{ librarian.mobile }}</td>
           <td class="actions-cell">
-            <button class="btn-edit" (click)="openEditLibrarianForm(librarian)">
-              Edit
-            </button>
-            <button class="btn-delete" (click)="deleteLibrarian(librarian)">
-              Delete
-            </button>
+            <button class="btn-edit" (click)="openEditLibrarianForm(librarian)">Edit</button>
+            <button class="btn-delete" (click)="deleteLibrarian(librarian)">Delete</button>
           </td>
         </tr>
         <tr *ngIf="filteredLibrarians.length === 0">
-          <td colspan="5" class="no-data">No librarians found</td>
+          <td colspan="6" class="no-data">No librarians found</td>
         </tr>
       </tbody>
     </table>
@@ -93,14 +91,20 @@
               </span>
           </div>
           <div class="form-group">
+              <label>Mobile Number</label>
+              <input type="tel" formControlName="mobile" [class.error]="isFieldInvalid(addLibrarianForm, 'mobile')" placeholder="Enter 10-digit mobile number">
+              <span class="error-message" *ngIf="isFieldInvalid(addLibrarianForm, 'mobile')">
+                <span *ngIf="addLibrarianForm.get('mobile')?.errors?.['required']">Mobile number is required.</span>
+                <span *ngIf="addLibrarianForm.get('mobile')?.errors?.['pattern']">Please enter a valid 10-digit mobile number.</span>
+              </span>
+          </div>
+          <div class="form-group">
               <label>Password</label>
               <input type="password" formControlName="password" [class.error]="isFieldInvalid(addLibrarianForm, 'password')" placeholder="Enter your password">
               <span class="error-message" *ngIf="isFieldInvalid(addLibrarianForm, 'password')">
-                <ng-container *ngIf="addLibrarianForm.get('password')?.errors as errors">
-                  <span *ngIf="errors['required']">Password is required.</span>
-                  <span *ngIf="errors['minlength']">Password must be at least 6 characters long.</span>
-                  <span *ngIf="errors['passwordStrength']">Password must contain at least one letter and one number.</span>
-                </ng-container>
+                <span *ngIf="addLibrarianForm.get('password')?.errors?.['required']">Password is required.</span>
+                <span *ngIf="addLibrarianForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters long.</span>
+                <span *ngIf="addLibrarianForm.get('password')?.errors?.['passwordStrength']">Password must contain at least one letter and one number.</span>
               </span>
           </div>
           <div class="form-actions">
@@ -154,9 +158,15 @@
                 <option value="Other">Other</option>
               </select>
               <span class="error-message" *ngIf="isFieldInvalid(editLibrarianForm, 'gender')">
-                <ng-container *ngIf="editLibrarianForm.get('gender')?.errors as errors">
-                  <span *ngIf="errors['required']">Gender is required.</span>
-                </ng-container>
+                <span *ngIf="editLibrarianForm.get('gender')?.errors?.['required']">Gender is required.</span>
+              </span>
+          </div>
+          <div class="form-group">
+              <label>Mobile Number</label>
+              <input type="tel" formControlName="mobile" [class.error]="isFieldInvalid(editLibrarianForm, 'mobile')" placeholder="Enter 10-digit mobile number">
+              <span class="error-message" *ngIf="isFieldInvalid(editLibrarianForm, 'mobile')">
+                <span *ngIf="editLibrarianForm.get('mobile')?.errors?.['required']">Mobile number is required.</span>
+                <span *ngIf="editLibrarianForm.get('mobile')?.errors?.['pattern']">Please enter a valid 10-digit mobile number.</span>
               </span>
           </div>
           <div class="form-group">

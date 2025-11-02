@@ -48,6 +48,20 @@
   }
 
 
+  <label>Mobile Number</label>
+  <input type="tel" formControlName="mobile" placeholder="Enter 10-digit mobile number" [class.invalid]="f['mobile'].invalid && f['mobile'].touched">
+  @if (f['mobile'].invalid && f['mobile'].touched) {
+    <div class="error-text">
+      @if (f['mobile'].errors?.['required']) {
+        <span>Mobile number is required.</span>
+      }
+      @if (f['mobile'].errors?.['pattern']) {
+        <span>Please enter a valid 10-digit mobile number.</span>
+      }
+    </div>
+  }
+
+
   <label>Password</label>
   <input type="password" formControlName="password" [class.invalid]="f['password'].invalid && f['password'].touched">
   @if (f['password'].invalid && f['password'].touched) {

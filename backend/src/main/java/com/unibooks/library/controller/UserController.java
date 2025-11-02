@@ -42,6 +42,7 @@ public class UserController {
             newUser.setName(userData.get("name"));
             newUser.setEmail(userData.get("email"));
             newUser.setGender(userData.get("gender"));
+            newUser.setMobile(userData.get("mobile"));
             newUser.setPassword(passwordEncoder.encode(userData.get("password")));
             
             // Set role from request, default to USER if not provided
@@ -93,6 +94,9 @@ public class UserController {
                     }
                     if (updates.containsKey("gender")) {
                         user.setGender((String) updates.get("gender"));
+                    }
+                    if (updates.containsKey("mobile")) {
+                        user.setMobile((String) updates.get("mobile"));
                     }
                     if (updates.containsKey("role")) {
                         user.setRole(User.Role.valueOf((String) updates.get("role")));

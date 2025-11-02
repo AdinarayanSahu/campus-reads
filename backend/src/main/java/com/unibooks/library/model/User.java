@@ -24,6 +24,9 @@ public class User {
     private String gender;
     
     @Column(nullable = false)
+    private String mobile;
+    
+    @Column(nullable = false)
     private String password;
     
     @Enumerated(EnumType.STRING)

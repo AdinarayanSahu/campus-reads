@@ -42,13 +42,15 @@ export class AdminManageUsersTabComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-zA-Z\s]+$/)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6), this.passwordStrengthValidator]],
-      gender: ['', [Validators.required]]
+      gender: ['', [Validators.required]],
+      mobile: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]]
     });
 
     this.editUserForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-zA-Z\s]+$/)]],
       email: ['', [Validators.required, Validators.email]],
-      gender: ['', [Validators.required]]
+      gender: ['', [Validators.required]],
+      mobile: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]]
     });
   }
 
@@ -116,7 +118,8 @@ export class AdminManageUsersTabComponent implements OnInit {
       name: '',
       email: '',
       password: '',
-      gender: ''
+      gender: '',
+      mobile: ''
     });
   }
 
@@ -169,7 +172,8 @@ export class AdminManageUsersTabComponent implements OnInit {
     this.editUserForm.patchValue({
       name: user.name,
       email: user.email,
-      gender: user.gender
+      gender: user.gender,
+      mobile: user.mobile
     });
     this.showEditUserForm = true;
   }
