@@ -94,9 +94,15 @@ export class LibrarianDashboardComponent implements OnInit {
   loadIssuedBooksCount() {
     this.borrowService.getAllBorrows().subscribe({
       next: (records: any) => {
-        this.stats.issuedBooks = records.filter((r: any) => 
-          r.status && r.status.toUpperCase() === 'BORROWED'
-        ).length;
+        // Count all books that are currently issued (not yet returned)
+        // We check for status 'BORROWED', 'ACTIVE', or 'APPROVED' and make sure returnDate is not set
+        this.stats.issuedBooks = records.filter((r: any) => {
+          if (!r.status) return false;
+          const status = r.status.toUpperCase();
+          const isIssued = status === 'BORROWED' || status === 'ACTIVE' || status === 'APPROVED';
+          const notReturned = !r.returnDate;
+          return isIssued && notReturned;
+        }).length;
       },
       error: (error: any) => {
         

@@ -228,8 +228,9 @@
 }
 
 .status-active .status-badge {
-  background: #e8f5e9;
-  color: #4CAF50;
+  background: #fff;
+  color: #222;
+  border: 1px solid #e0e0e0;
 }
 
 .status-pending .status-badge {

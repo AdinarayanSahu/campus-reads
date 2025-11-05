@@ -21,12 +21,6 @@ export class MyBooksTabComponent implements OnInit {
   activeFilter: string = 'all';
   searchTerm: string = '';
 
-  showReturnModal: boolean = false;
-  selectedBorrow: any = null;
-  returning: boolean = false;
-  returnSuccess: string = '';
-  returnError: string = '';
-
   constructor(private borrowService: BorrowService) {}
 
   ngOnInit() {
@@ -130,55 +124,6 @@ export class MyBooksTabComponent implements OnInit {
     if (this.isOverdue(borrow)) return 'Overdue';
     if (borrow.status === 'BORROWED' || borrow.status === 'ACTIVE' || borrow.status === 'APPROVED') return 'Borrowed';
     return borrow.status;
-  }
-
-  canReturn(borrow: any): boolean {
-    return (borrow.status === 'BORROWED' || borrow.status === 'ACTIVE' || borrow.status === 'APPROVED') && !borrow.returnDate;
-  }
-
-  openReturnModal(borrow: any) {
-    this.selectedBorrow = borrow;
-    this.showReturnModal = true;
-    this.returnSuccess = '';
-    this.returnError = '';
-  }
-
-  closeReturnModal() {
-    this.showReturnModal = false;
-    this.selectedBorrow = null;
-    this.returnSuccess = '';
-    this.returnError = '';
-  }
-
-  confirmReturn() {
-    if (!this.selectedBorrow) return;
-
-    this.returning = true;
-    this.returnError = '';
-    this.returnSuccess = '';
-
-    console.log('Attempting to return book with ID:', this.selectedBorrow.id);
-    console.log('Selected borrow object:', this.selectedBorrow);
-
-    this.borrowService.returnBook(this.selectedBorrow.id).subscribe({
-      next: (response) => {
-        console.log('Book returned successfully:', response);
-        this.returnSuccess = `Successfully returned "${this.selectedBorrow.bookTitle}"!`;
-        this.returning = false;
-        
-        setTimeout(() => {
-          this.closeReturnModal();
-          this.loadMyBooks();
-        }, 1500);
-      },
-      error: (error) => {
-        console.error('Error returning book:', error);
-        console.error('Error details:', error.error);
-        console.error('Error status:', error.status);
-        this.returnError = error.error?.message || error.error?.error || error.message || 'Failed to return book. Please try again.';
-        this.returning = false;
-      }
-    });
   }
 
   formatDate(dateString: string): string {

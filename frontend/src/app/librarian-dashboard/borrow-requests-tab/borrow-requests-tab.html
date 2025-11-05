@@ -96,6 +96,7 @@
                     <th>Borrower</th>
                     <th>Borrow Date</th>
                     <th>Due Date</th>
+                    <th>Returned Date</th>
                     <th>Status</th>
                     <th>Days</th>
                     <th>Actions</th>
@@ -114,28 +115,35 @@
                     <td>{{ formatDate(borrow.borrowDate) }}</td>
                     <td>{{ formatDate(borrow.dueDate) }}</td>
                     <td>
+                      @if (borrow.returnDate) {
+                        {{ formatDate(borrow.returnDate) }}
+                      } @else {
+                        -
+                      }
+                    </td>
+                    <td>
                         <span class="status-badge" [ngClass]="getStatusClass(borrow)">
                             {{ getStatusText(borrow) }}
                         </span>
                     </td>
                     <td>
-                        @if (borrow.status !== 'RETURNED') {
-                          <span>
-                              @if (!borrow.isOverdue) {
-                                <span class="days-remaining">
-                                    {{ calculateDaysRemaining(borrow.dueDate) }} days left
-                                </span>
-                              }
-                              @if (borrow.isOverdue) {
-                                <span class="days-overdue">
-                                    {{ calculateDaysRemaining(borrow.dueDate) * -1 }} days overdue
-                                </span>
-                              }
-                          </span>
-                        }
-                        @if (borrow.status === 'RETURNED') {
-                          <span>-</span>
-                        }
+                                                @if (borrow.status !== 'RETURNED') {
+                                                    <span>
+                                                            @if (!borrow.isOverdue) {
+                                                                <span class="days-remaining">
+                                                                        {{ calculateDaysRemaining(borrow.dueDate) }} days left
+                                                                </span>
+                                                            }
+                                                            @if (borrow.isOverdue) {
+                                                                <span class="days-overdue">
+                                                                        {{ calculateDaysRemaining(borrow.dueDate) * -1 }} days overdue
+                                                                </span>
+                                                            }
+                                                    </span>
+                                                }
+                                                @if (borrow.status === 'RETURNED') {
+                                                    <span>-</span>
+                                                }
                     </td>
                     <td>
                         <button class="btn-view" (click)="viewDetails(borrow)">
@@ -155,6 +163,22 @@
                               (click)="openRejectModal(borrow)"
                               [disabled]="processingAction">
                               ✗ Reject
+                          </button>
+                        }
+                        @if (borrow.status === 'BORROWED' && !borrow.isOverdue) {
+                          <button 
+                              class="btn-return" 
+                              (click)="openReturnModal(borrow)"
+                              [disabled]="processingAction">
+                              Return
+                          </button>
+                        }
+                        @if (borrow.isOverdue) {
+                          <button 
+                              class="btn-return overdue" 
+                              (click)="openReturnModal(borrow)"
+                              [disabled]="processingAction">
+                              Return (Overdue)
                           </button>
                         }
                     </td>
@@ -250,6 +274,16 @@
                     <span class="value">{{ formatDate(selectedBorrow.dueDate) }}</span>
                 </div>
                 <div class="detail-row">
+                    <span class="label">Returned Date:</span>
+                    <span class="value">
+                      @if (selectedBorrow.returnDate) {
+                        {{ formatDate(selectedBorrow.returnDate) }}
+                      } @else {
+                        -
+                      }
+                    </span>
+                </div>
+                <div class="detail-row">
                     <span class="label">Status:</span>
                     <span class="value">
                         <span class="status-badge" [ngClass]="getStatusClass(selectedBorrow)">
@@ -316,6 +350,81 @@
                     [disabled]="processingAction">
                     @if (!processingAction) {
                       <span>Reject Request</span>
+                    }
+                    @if (processingAction) {
+                      <span>Processing...</span>
+                    }
+                </button>
+            </div>
+          </div>
+        }
+    </div>
+  </div>
+}
+
+@if (showReturnModal) {
+  <div class="modal-overlay" (click)="closeReturnModal()">
+    <div class="modal-content return-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3>Return Book</h3>
+            <button class="close-btn" (click)="closeReturnModal()">×</button>
+        </div>
+        
+        @if (borrowToReturn) {
+          <div class="modal-body">
+            <p>Confirm return of the following book:</p>
+            <div class="return-info">
+                <div class="detail-row">
+                    <span class="label">Book:</span>
+                    <span class="value">{{ borrowToReturn.bookTitle }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Author:</span>
+                    <span class="value">{{ borrowToReturn.bookAuthor }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Borrower:</span>
+                    <span class="value">{{ borrowToReturn.userName }} ({{ borrowToReturn.userEmail }})</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Borrow Date:</span>
+                    <span class="value">{{ formatDate(borrowToReturn.borrowDate) }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Due Date:</span>
+                    <span class="value" [class.overdue-text]="borrowToReturn.isOverdue">
+                        {{ formatDate(borrowToReturn.dueDate) }}
+                    </span>
+                </div>
+                @if (borrowToReturn.isOverdue) {
+                  <div class="detail-row">
+                      <span class="label">Days Overdue:</span>
+                      <span class="value overdue-text">
+                          {{ calculateDaysRemaining(borrowToReturn.dueDate) * -1 }} days
+                      </span>
+                  </div>
+                }
+            </div>
+            
+            @if (borrowToReturn.isOverdue) {
+              <div class="warning-message">
+                  <strong>Note:</strong> This book is overdue. A fine may apply.
+              </div>
+            }
+            
+            <div class="modal-actions">
+                <button 
+                    class="btn-cancel" 
+                    (click)="closeReturnModal()"
+                    [disabled]="processingAction">
+                    Cancel
+                </button>
+                <button 
+                    class="btn-return-confirm" 
+                    (click)="confirmReturnBook()"
+                    [disabled]="processingAction">
+                    @if (!processingAction) {
+                      <span>Confirm Return</span>
                     }
                     @if (processingAction) {
                       <span>Processing...</span>

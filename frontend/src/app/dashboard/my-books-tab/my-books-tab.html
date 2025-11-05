@@ -4,7 +4,7 @@
     <p class="subtitle">View your borrowed books and return history</p>
   </div>
 
-  <!-- Filter Tabs -->
+  
   <div class="filter-tabs">
     <button class="filter-tab" 
             [class.active]="activeFilter === 'all'"
@@ -33,7 +33,7 @@
     </button>
   </div>
 
-  <!-- Search Bar -->
+
   <div class="search-bar">
     <input type="text" 
            [(ngModel)]="searchTerm" 
@@ -115,11 +115,6 @@
               <span class="value rejection-reason">{{ borrow.rejectionReason }}</span>
             </div>
           }
-          @if (canReturn(borrow) && !isOverdue(borrow)) {
-            <span class="days-info">
-              {{ getDaysUntilDue(borrow) }} days remaining
-            </span>
-          }
           @if (isOverdue(borrow)) {
             <span class="days-info overdue-text">
               {{ -getDaysUntilDue(borrow) }} days overdue
@@ -127,80 +122,8 @@
           }
         </div>
       </div>
-
-      <div class="borrow-actions">
-        @if (canReturn(borrow)) {
-          <button class="return-btn" 
-                  (click)="openReturnModal(borrow)">
-            Return Book
-          </button>
-        }
-      </div>
     </div>
       }
     </div>
   }
 </div>
-
-@if (showReturnModal) {
-  <div class="modal-overlay" (click)="closeReturnModal()">
-  <div class="modal-content return-modal" (click)="$event.stopPropagation()">
-    <button class="close-btn" (click)="closeReturnModal()">&times;</button>
-    
-    <div class="modal-header">
-      <h2>Return Book</h2>
-    </div>
-
-    @if (selectedBorrow) {
-      <div class="modal-body">
-      <div class="return-book-info">
-        <img [src]="selectedBorrow.bookCoverImage || 'assets/icons/books.png'" 
-             [alt]="selectedBorrow.bookTitle"
-             class="book-thumbnail"
-             (error)="$any($event.target).src='assets/icons/books.png'">
-        <div>
-          <h3>{{ selectedBorrow.bookTitle }}</h3>
-          <p>by {{ selectedBorrow.bookAuthor }}</p>
-          <p class="borrowed-date">Borrowed on: {{ formatDate(selectedBorrow.borrowDate) }}</p>
-        </div>
-      </div>
-
-      <div class="confirmation-message">
-        <p>Are you sure you want to return this book?</p>
-        <p class="note">This action cannot be undone.</p>
-      </div>
-
-      @if (returnSuccess) {
-        <div class="success-message">
-          <p>{{ returnSuccess }}</p>
-        </div>
-      }
-
-      @if (returnError) {
-        <div class="error-message">
-          <p>{{ returnError }}</p>
-        </div>
-      }
-
-      <div class="modal-actions">
-        <button class="cancel-btn" 
-                (click)="closeReturnModal()"
-                [disabled]="returning">
-          Cancel
-        </button>
-        <button class="confirm-btn" 
-                (click)="confirmReturn()"
-                [disabled]="returning">
-          @if (!returning) {
-            <span>Confirm Return</span>
-          }
-          @if (returning) {
-            <span>Returning...</span>
-          }
-        </button>
-      </div>
-    </div>
-    }
-  </div>
-  </div>
-}

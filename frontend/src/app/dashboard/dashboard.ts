@@ -57,20 +57,12 @@ export class DashboardComponent implements OnInit {
     this.borrowService.getUserBorrows(this.user.userId).subscribe({
       next: (borrows) => {
         this.stats.booksBorrowed = borrows.filter((b: any) => b.status === 'BORROWED' && !b.returnDate).length;
-
         this.stats.booksReturned = borrows.filter((b: any) => 
           b.status === 'RETURNED' || !!b.returnDate
         ).length;
-
-        this.stats.pendingReturns = borrows.filter((b: any) => {
-          if (b.status !== 'BORROWED') return false;
-          if (!b.dueDate) return false;
-          const due = new Date(b.dueDate);
-          return due < new Date();
-        }).length;
+        this.stats.pendingReturns = borrows.filter((b: any) => b.status === 'BORROWED' && !b.returnDate).length;
       },
       error: (error) => {
-        
       }
     });
   }

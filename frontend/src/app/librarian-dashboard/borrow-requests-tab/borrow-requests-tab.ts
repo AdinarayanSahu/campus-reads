@@ -34,6 +34,9 @@ export class BorrowRequestsTabComponent implements OnInit {
     rejectReason: string = '';
     borrowToReject: any = null;
 
+    showReturnModal: boolean = false;
+    borrowToReturn: any = null;
+
     constructor(private borrowService: BorrowService) { }
 
     ngOnInit() {
@@ -259,6 +262,39 @@ export class BorrowRequestsTabComponent implements OnInit {
             error: (error) => {
                 
                 this.errorMessage = error.error?.error || 'Failed to reject request. Please try again.';
+                this.processingAction = false;
+            }
+        });
+    }
+    
+    openReturnModal(borrow: any) {
+        this.borrowToReturn = borrow;
+        this.showReturnModal = true;
+    }
+
+    closeReturnModal() {
+        this.showReturnModal = false;
+        this.borrowToReturn = null;
+    }
+
+    confirmReturnBook() {
+        if (!this.borrowToReturn) return;
+
+        this.processingAction = true;
+        this.errorMessage = '';
+        this.successMessage = '';
+
+        this.borrowService.returnBook(this.borrowToReturn.id).subscribe({
+            next: (response) => {
+                console.log('Book returned successfully:', response);
+                this.successMessage = `Successfully marked "${this.borrowToReturn.bookTitle}" as returned`;
+                this.processingAction = false;
+                this.closeReturnModal();
+                this.loadBorrowRecords();
+            },
+            error: (error) => {
+                console.error('Error returning book:', error);
+                this.errorMessage = error.error?.error || 'Failed to mark book as returned. Please try again.';
                 this.processingAction = false;
             }
         });

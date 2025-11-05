@@ -35,6 +35,7 @@ public class BorrowController {
     }
 
     @PostMapping("/return")
+    @PreAuthorize("hasAnyAuthority('LIBRARIAN', 'ADMIN')")
     public ResponseEntity<?> returnBook(@RequestBody ReturnRequest request) {
         try {
             BorrowResponse response = borrowService.returnBook(request);
