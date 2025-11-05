@@ -46,7 +46,7 @@ export class BorrowRequestsTabComponent implements OnInit {
         
         this.borrowService.getAllBorrows().subscribe({
             next: (response) => {
-                console.log('Borrow records loaded:', response);
+                
                 this.allBorrows = response.map((borrow: any) => ({
                     ...borrow,
                     isOverdue: this.checkIfOverdue(borrow)
@@ -55,7 +55,7 @@ export class BorrowRequestsTabComponent implements OnInit {
                 this.loading = false;
             },
             error: (error) => {
-                console.error('Error loading borrow records:', error);
+                
                 this.errorMessage = 'Failed to load borrow records. Please try again.';
                 this.loading = false;
             }
@@ -215,13 +215,13 @@ export class BorrowRequestsTabComponent implements OnInit {
 
             this.borrowService.approveBorrowRequest(borrow.id).subscribe({
                 next: (response) => {
-                    console.log('Borrow request approved:', response);
+                    
                     this.successMessage = `Successfully approved borrow record for "${borrow.bookTitle}"`;
                     this.processingAction = false;
                     this.loadBorrowRecords();
                 },
                 error: (error) => {
-                    console.error('Error approving request:', error);
+                    
                     this.errorMessage = error.error?.error || 'Failed to approve request. Please try again.';
                     this.processingAction = false;
                 }
@@ -250,14 +250,14 @@ export class BorrowRequestsTabComponent implements OnInit {
 
         this.borrowService.rejectBorrowRequest(this.borrowToReject.id, this.rejectReason).subscribe({
             next: (response) => {
-                console.log('Borrow request rejected:', response);
+                
                 this.successMessage = `Successfully rejected borrow record for "${this.borrowToReject.bookTitle}"`;
                 this.processingAction = false;
                 this.closeRejectModal();
                 this.loadBorrowRecords();
             },
             error: (error) => {
-                console.error('Error rejecting request:', error);
+                
                 this.errorMessage = error.error?.error || 'Failed to reject request. Please try again.';
                 this.processingAction = false;
             }

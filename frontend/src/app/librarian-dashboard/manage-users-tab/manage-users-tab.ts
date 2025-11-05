@@ -39,13 +39,13 @@ export class ManageUsersTabComponent implements OnInit {
   loadUsers() {
     this.userService.getAllUsers().subscribe({
       next: (response) => {
-        console.log('Users loaded:', response);
+        
         this.users = response.filter((user: any) => user.role === 'USER');
         this.filteredUsers = this.users;
         this.userCountUpdated.emit(this.users.length);
       },
       error: (error) => {
-        console.error('Error loading users:', error);
+        
         if (error.status === 401 || error.status === 403) {
           alert('Session expired. Please login again.');
           if (typeof window !== 'undefined') {
@@ -133,7 +133,7 @@ export class ManageUsersTabComponent implements OnInit {
         this.loadUsers();
       },
       error: (error) => {
-        console.error('Error registering user:', error);
+        
         if (error.status === 401 || error.status === 403) {
           alert('Session expired. Please login again.');
           if (typeof window !== 'undefined') {

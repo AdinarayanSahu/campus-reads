@@ -73,7 +73,7 @@ export class LibrarianDashboardComponent implements OnInit {
         this.stats.totalBooks = books.length;
       },
       error: (error) => {
-        console.error('Error loading books count:', error);
+        
       }
     });
   }
@@ -86,7 +86,7 @@ export class LibrarianDashboardComponent implements OnInit {
         ).length;
       },
       error: (error) => {
-        console.error('Error loading users count:', error);
+        
       }
     });
   }
@@ -99,7 +99,7 @@ export class LibrarianDashboardComponent implements OnInit {
         ).length;
       },
       error: (error: any) => {
-        console.error('Error loading issued books count:', error);
+        
       }
     });
   }
@@ -110,7 +110,7 @@ export class LibrarianDashboardComponent implements OnInit {
         this.stats.pendingRequests = requests.length;
       },
       error: (error) => {
-        console.error('Error loading pending requests count:', error);
+        
       }
     });
   }

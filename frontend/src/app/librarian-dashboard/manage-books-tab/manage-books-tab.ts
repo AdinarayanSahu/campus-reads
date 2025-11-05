@@ -45,13 +45,13 @@ export class ManageBooksTabComponent implements OnInit {
   loadBooks() {
     this.bookService.getAllBooks().subscribe({
       next: (response) => {
-        console.log('Books loaded:', response);
+        
         this.books = response;
         this.filteredBooks = response;
         this.bookCountUpdated.emit(response.length);
       },
       error: (error) => {
-        console.error('Error loading books:', error);
+        
         if (error.status === 401 || error.status === 403) {
           alert('Session expired. Please login again.');
           if (typeof window !== 'undefined') {
@@ -102,16 +102,16 @@ export class ManageBooksTabComponent implements OnInit {
       return;
     }
 
-    console.log('Adding book:', this.currentBook);
+    
     this.bookService.addBook(this.currentBook).subscribe({
       next: (response) => {
-        console.log('Book added:', response);
+        
         alert('Book added successfully!');
         this.closeAddBookForm();
         this.loadBooks();
       },
       error: (error) => {
-        console.error('Error adding book:', error);
+        
         if (error.status === 401 || error.status === 403) {
           alert('Session expired. Please login again.');
           if (typeof window !== 'undefined') {
@@ -149,7 +149,7 @@ export class ManageBooksTabComponent implements OnInit {
         this.loadBooks();
       },
       error: (error) => {
-        console.error('Error updating book:', error);
+        
         alert('Failed to update book. Please try again.');
       }
     });
@@ -168,7 +168,7 @@ export class ManageBooksTabComponent implements OnInit {
         this.bookCountUpdated.emit(this.books.length);
       },
       error: (error) => {
-        console.error('Error deleting book:', error);
+        
         if (error.status === 200 || error.status === 204) {
           this.books = this.books.filter(book => book.id !== bookId);
           this.filteredBooks = this.filteredBooks.filter(book => book.id !== bookId);

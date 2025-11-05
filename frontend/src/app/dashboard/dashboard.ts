@@ -70,7 +70,7 @@ export class DashboardComponent implements OnInit {
         }).length;
       },
       error: (error) => {
-        console.error('Error loading user stats:', error);
+        
       }
     });
   }

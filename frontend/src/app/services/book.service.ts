@@ -25,7 +25,7 @@ export class BookService {
   }
 
   getAllBooks(): Observable<any> {
-    console.log('Fetching all books from:', this.apiUrl);
+    
     return this.http.get(this.apiUrl, { headers: this.getHeaders() });
   }
 
@@ -34,7 +34,7 @@ export class BookService {
   }
 
   addBook(bookData: any): Observable<any> {
-    console.log('Adding book with data:', bookData);
+    
     return this.http.post(this.apiUrl, bookData, { headers: this.getHeaders() });
   }
 
