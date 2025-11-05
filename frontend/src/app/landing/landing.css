@@ -63,21 +63,7 @@
   margin: 15px 0 25px;
 }
 
-.el-btn {
-  background-color: #3b82f6;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
 
-.el-btn:hover {
-  transform: scale(1.05);
-  background-color: #1e40af;
-}
 
 .features {
   display: flex;

@@ -98,12 +98,22 @@ export class ManageUsersTabComponent implements OnInit {
   }
 
   addUser() {
+
     if (!this.validateUser()) {
       return;
     }
 
-    if (!this.currentUser.password || !this.currentUser.password.trim()) {
+    const password = this.currentUser.password || '';
+    if (!password.trim()) {
       alert('Please enter a password.');
+      return;
+    }
+    if (password.length < 6) {
+      alert('Password must be at least 6 characters long.');
+      return;
+    }
+    if (!/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+      alert('Password must contain at least one letter and one number.');
       return;
     }
 
