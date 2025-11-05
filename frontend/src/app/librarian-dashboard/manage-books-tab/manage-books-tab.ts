@@ -194,6 +194,14 @@ export class ManageBooksTabComponent implements OnInit {
       alert('Please enter an ISBN.');
       return false;
     }
+    if (this.isIsbnNotNumeric(this.currentBook.isbn)) {
+      alert('ISBN must contain only numbers.');
+      return false;
+    }
+    if (!(this.currentBook.isbn.length === 10 || this.currentBook.isbn.length === 13)) {
+      alert('ISBN must be exactly 10 or 13 digits.');
+      return false;
+    }
     if (!this.currentBook.category.trim()) {
       alert('Please enter a category.');
       return false;

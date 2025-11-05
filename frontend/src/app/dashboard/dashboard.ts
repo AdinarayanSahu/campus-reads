@@ -56,15 +56,12 @@ export class DashboardComponent implements OnInit {
 
     this.borrowService.getUserBorrows(this.user.userId).subscribe({
       next: (borrows) => {
-        // Count currently borrowed books (status 'BORROWED')
         this.stats.booksBorrowed = borrows.filter((b: any) => b.status === 'BORROWED' && !b.returnDate).length;
 
-        // Count returned books (status 'RETURNED' or has a returnDate)
         this.stats.booksReturned = borrows.filter((b: any) => 
           b.status === 'RETURNED' || !!b.returnDate
         ).length;
 
-        // Pending returns: currently borrowed items whose due date has passed
         this.stats.pendingReturns = borrows.filter((b: any) => {
           if (b.status !== 'BORROWED') return false;
           if (!b.dueDate) return false;
