@@ -11,14 +11,16 @@ export class UserService {
   constructor(private http: HttpClient) { }
 
   private getHeaders(): HttpHeaders {
-    let token = '';
-    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-      token = localStorage.getItem('token') || '';
-    }
-    return new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json'
     });
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      if (token) {
+        headers = headers.set('Authorization', `Bearer ${token}`);
+      }
+    }
+    return headers;
   }
 
   getAllUsers(): Observable<any> {

@@ -56,13 +56,21 @@ export class DashboardComponent implements OnInit {
 
     this.borrowService.getUserBorrows(this.user.userId).subscribe({
       next: (borrows) => {
-        this.stats.booksBorrowed = borrows.length;
+        // Count currently borrowed books (status 'BORROWED')
+        this.stats.booksBorrowed = borrows.filter((b: any) => b.status === 'BORROWED' && !b.returnDate).length;
+
+        // Count returned books (status 'RETURNED' or has a returnDate)
         this.stats.booksReturned = borrows.filter((b: any) => 
-          b.status === 'RETURNED' || b.returnDate
+          b.status === 'RETURNED' || !!b.returnDate
         ).length;
-        this.stats.pendingReturns = borrows.filter((b: any) => 
-          b.status === 'ACTIVE' || (b.status === 'APPROVED' && !b.returnDate)
-        ).length;
+
+        // Pending returns: currently borrowed items whose due date has passed
+        this.stats.pendingReturns = borrows.filter((b: any) => {
+          if (b.status !== 'BORROWED') return false;
+          if (!b.dueDate) return false;
+          const due = new Date(b.dueDate);
+          return due < new Date();
+        }).length;
       },
       error: (error) => {
         console.error('Error loading user stats:', error);

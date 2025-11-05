@@ -7,7 +7,6 @@ import { Observable } from 'rxjs';
 })
 export class BorrowService {
     
-    // API endpoint for borrow operations
     private apiUrl = 'http://localhost:8080/api/borrows';
 
     constructor(private http: HttpClient) { }

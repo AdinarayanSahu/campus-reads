@@ -18,10 +18,9 @@ export class MyBooksTabComponent implements OnInit {
   loading: boolean = false;
   errorMessage: string = '';
   
-  activeFilter: string = 'all'; // all, borrowed, pending, returned, overdue
+  activeFilter: string = 'all';
   searchTerm: string = '';
 
-  // Return book modal
   showReturnModal: boolean = false;
   selectedBorrow: any = null;
   returning: boolean = false;
@@ -72,7 +71,6 @@ export class MyBooksTabComponent implements OnInit {
   applyFilters() {
     let filtered = [...this.allBorrows];
 
-    // Apply status filter
     if (this.activeFilter !== 'all') {
       filtered = filtered.filter(borrow => {
         if (this.activeFilter === 'borrowed') {
@@ -90,7 +88,6 @@ export class MyBooksTabComponent implements OnInit {
       });
     }
 
-    // Apply search filter
     if (this.searchTerm) {
       filtered = filtered.filter(borrow => 
         borrow.bookTitle?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||

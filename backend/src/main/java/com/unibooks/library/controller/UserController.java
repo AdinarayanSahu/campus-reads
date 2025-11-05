@@ -33,7 +33,6 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('LIBRARIAN', 'ADMIN')")
     public ResponseEntity<?> registerUser(@RequestBody Map<String, String> userData) {
         try {
-            // Check if email already exists
             if (userRepository.findByEmail(userData.get("email")).isPresent()) {
                 return ResponseEntity.badRequest().body(Map.of("message", "Email already exists"));
             }
@@ -45,7 +44,6 @@ public class UserController {
             newUser.setMobile(userData.get("mobile"));
             newUser.setPassword(passwordEncoder.encode(userData.get("password")));
             
-            // Set role from request, default to USER if not provided
             String roleStr = userData.get("role");
             if (roleStr != null && !roleStr.isEmpty()) {
                 try {

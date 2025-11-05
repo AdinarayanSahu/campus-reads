@@ -11,14 +11,18 @@ import { Subscription, interval } from 'rxjs';
   imports: [CommonModule],
   template: `
     <div class="session-info">
-      <div class="user-info" *ngIf="userData">
-        <span class="user-name">{{ userData.name }}</span>
-        <span class="user-role">({{ userData.role }})</span>
-      </div>
+      @if (userData) {
+        <div class="user-info">
+          <span class="user-name">{{ userData.name }}</span>
+          <span class="user-role">({{ userData.role }})</span>
+        </div>
+      }
       <div class="session-status">
-        <span class="time-remaining" *ngIf="timeRemaining > 0">
-          Session expires in: {{ formatTime(timeRemaining) }}
-        </span>
+        @if (timeRemaining > 0) {
+          <span class="time-remaining">
+            Session expires in: {{ formatTime(timeRemaining) }}
+          </span>
+        }
         <button class="btn-logout" (click)="onLogout()">Logout</button>
       </div>
     </div>

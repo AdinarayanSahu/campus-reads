@@ -2,13 +2,21 @@
     <div class="header-section">
         <h2>Borrow Records</h2>
         <button class="refresh-btn" (click)="refreshData()" [disabled]="loading">
-            <span *ngIf="!loading">Refresh</span>
-            <span *ngIf="loading">Loading...</span>
+            @if (!loading) {
+              <span>Refresh</span>
+            }
+            @if (loading) {
+              <span>Loading...</span>
+            }
         </button>
     </div>
 
-    <div class="alert alert-success" *ngIf="successMessage">{{ successMessage }}</div>
-    <div class="alert alert-error" *ngIf="errorMessage">{{ errorMessage }}</div>
+    @if (successMessage) {
+      <div class="alert alert-success">{{ successMessage }}</div>
+    }
+    @if (errorMessage) {
+      <div class="alert alert-error">{{ errorMessage }}</div>
+    }
 
     <div class="stats-cards">
         <div class="stat-card pending">
@@ -72,12 +80,15 @@
         </div>
     </div>
 
-    <div class="loading-container" *ngIf="loading">
-        <div class="spinner"></div>
-        <p>Loading borrow records...</p>
-    </div>
+    @if (loading) {
+      <div class="loading-container">
+          <div class="spinner"></div>
+          <p>Loading borrow records...</p>
+      </div>
+    }
 
-    <div class="table-container" *ngIf="!loading && paginatedBorrows.length > 0">
+    @if (!loading && paginatedBorrows.length > 0) {
+      <div class="table-container">
         <table class="borrow-table">
             <thead>
                 <tr>
@@ -91,7 +102,8 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let borrow of paginatedBorrows" [class.overdue-row]="borrow.isOverdue">
+                @for (borrow of paginatedBorrows; track borrow.id) {
+                  <tr [class.overdue-row]="borrow.isOverdue">
                     <td class="book-title">{{ borrow.bookTitle }}</td>
                     <td>
                         <div class="user-info">
@@ -107,78 +119,98 @@
                         </span>
                     </td>
                     <td>
-                        <span *ngIf="borrow.status !== 'RETURNED'">
-                            <span *ngIf="!borrow.isOverdue" class="days-remaining">
-                                {{ calculateDaysRemaining(borrow.dueDate) }} days left
-                            </span>
-                            <span *ngIf="borrow.isOverdue" class="days-overdue">
-                                {{ calculateDaysRemaining(borrow.dueDate) * -1 }} days overdue
-                            </span>
-                        </span>
-                        <span *ngIf="borrow.status === 'RETURNED'">-</span>
+                        @if (borrow.status !== 'RETURNED') {
+                          <span>
+                              @if (!borrow.isOverdue) {
+                                <span class="days-remaining">
+                                    {{ calculateDaysRemaining(borrow.dueDate) }} days left
+                                </span>
+                              }
+                              @if (borrow.isOverdue) {
+                                <span class="days-overdue">
+                                    {{ calculateDaysRemaining(borrow.dueDate) * -1 }} days overdue
+                                </span>
+                              }
+                          </span>
+                        }
+                        @if (borrow.status === 'RETURNED') {
+                          <span>-</span>
+                        }
                     </td>
                     <td>
                         <button class="btn-view" (click)="viewDetails(borrow)">
                             View Details
                         </button>
-                        <button 
-                            *ngIf="borrow.status === 'PENDING'" 
-                            class="btn-approve" 
-                            (click)="approveBorrowRequest(borrow)"
-                            [disabled]="processingAction">
-                            ✓ Approve
-                        </button>
-                        <button 
-                            *ngIf="borrow.status === 'PENDING'" 
-                            class="btn-reject" 
-                            (click)="openRejectModal(borrow)"
-                            [disabled]="processingAction">
-                            ✗ Reject
-                        </button>
+                        @if (borrow.status === 'PENDING') {
+                          <button 
+                              class="btn-approve" 
+                              (click)="approveBorrowRequest(borrow)"
+                              [disabled]="processingAction">
+                              ✓ Approve
+                          </button>
+                        }
+                        @if (borrow.status === 'PENDING') {
+                          <button 
+                              class="btn-reject" 
+                              (click)="openRejectModal(borrow)"
+                              [disabled]="processingAction">
+                              ✗ Reject
+                          </button>
+                        }
                     </td>
                 </tr>
+                }
             </tbody>
         </table>
-    </div>
+      </div>
+    }
 
-    <div class="no-records" *ngIf="!loading && paginatedBorrows.length === 0">
-        <p>No borrow records found.</p>
-        <p *ngIf="searchTerm || filterStatus !== 'all'">Try adjusting your filters.</p>
-    </div>
+    @if (!loading && paginatedBorrows.length === 0) {
+      <div class="no-records">
+          <p>No borrow records found.</p>
+          @if (searchTerm || filterStatus !== 'all') {
+            <p>Try adjusting your filters.</p>
+          }
+      </div>
+    }
 
-    <div class="pagination" *ngIf="totalPages > 1">
-        <button 
-            class="page-btn" 
-            (click)="goToPage(currentPage - 1)" 
-            [disabled]="currentPage === 1">
-            Previous
-        </button>
+        @if (totalPages > 1) {
+            <div class="pagination">
+                <button 
+                        class="page-btn" 
+                        (click)="goToPage(currentPage - 1)" 
+                        [disabled]="currentPage === 1">
+                        Previous
+                </button>
         
-        <button 
-            *ngFor="let page of getPageNumbers()" 
-            class="page-btn" 
-            [class.active]="page === currentPage"
-            (click)="goToPage(page)">
-            {{ page }}
-        </button>
+                @for (page of getPageNumbers(); track page) {
+                    <button 
+                            class="page-btn" 
+                            [class.active]="page === currentPage"
+                            (click)="goToPage(page)">
+                            {{ page }}
+                    </button>
+                }
         
-        <button 
-            class="page-btn" 
-            (click)="goToPage(currentPage + 1)" 
-            [disabled]="currentPage === totalPages">
-            Next
-        </button>
-    </div>
-</div>
+                <button 
+                        class="page-btn" 
+                        (click)="goToPage(currentPage + 1)" 
+                        [disabled]="currentPage === totalPages">
+                        Next
+                </button>
+            </div>
+        }
 
-<div class="modal-overlay" *ngIf="showDetailsModal" (click)="closeDetailsModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
+@if (showDetailsModal) {
+    <div class="modal-overlay" (click)="closeDetailsModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
             <h3>Borrow Record Details</h3>
             <button class="close-btn" (click)="closeDetailsModal()">×</button>
         </div>
         
-        <div class="modal-body" *ngIf="selectedBorrow">
+        @if (selectedBorrow) {
+          <div class="modal-body">
             <div class="detail-section">
                 <h4>Book Information</h4>
                 <div class="detail-row">
@@ -225,27 +257,35 @@
                         </span>
                     </span>
                 </div>
-                <div class="detail-row" *ngIf="selectedBorrow.fineAmount > 0">
-                    <span class="label">Fine Amount:</span>
-                    <span class="value fine-amount">${{ selectedBorrow.fineAmount.toFixed(2) }}</span>
-                </div>
-                <div class="detail-row" *ngIf="selectedBorrow.status === 'REJECTED' && selectedBorrow.rejectionReason">
-                    <span class="label">Rejection Reason:</span>
-                    <span class="value rejection-reason">{{ selectedBorrow.rejectionReason }}</span>
-                </div>
+                @if (selectedBorrow.fineAmount > 0) {
+                  <div class="detail-row">
+                      <span class="label">Fine Amount:</span>
+                      <span class="value fine-amount">${{ selectedBorrow.fineAmount.toFixed(2) }}</span>
+                  </div>
+                }
+                @if (selectedBorrow.status === 'REJECTED' && selectedBorrow.rejectionReason) {
+                  <div class="detail-row">
+                      <span class="label">Rejection Reason:</span>
+                      <span class="value rejection-reason">{{ selectedBorrow.rejectionReason }}</span>
+                  </div>
+                }
             </div>
+          </div>
+        }
+                </div>
         </div>
-    </div>
-</div>
+    }
 
-<div class="modal-overlay" *ngIf="showRejectModal" (click)="closeRejectModal()">
+@if (showRejectModal) {
+  <div class="modal-overlay" (click)="closeRejectModal()">
     <div class="modal-content reject-modal" (click)="$event.stopPropagation()">
         <div class="modal-header">
             <h3>Reject Borrow Record</h3>
             <button class="close-btn" (click)="closeRejectModal()">×</button>
         </div>
         
-        <div class="modal-body" *ngIf="borrowToReject">
+        @if (borrowToReject) {
+          <div class="modal-body">
             <p>Are you sure you want to reject the borrow record for:</p>
             <div class="reject-info">
                 <strong>Book:</strong> {{ borrowToReject.bookTitle }}<br>
@@ -274,10 +314,16 @@
                     class="btn-reject-confirm" 
                     (click)="rejectBorrowRequest()"
                     [disabled]="processingAction">
-                    <span *ngIf="!processingAction">Reject Request</span>
-                    <span *ngIf="processingAction">Processing...</span>
+                    @if (!processingAction) {
+                      <span>Reject Request</span>
+                    }
+                    @if (processingAction) {
+                      <span>Processing...</span>
+                    }
                 </button>
             </div>
-        </div>
+          </div>
+        }
     </div>
-</div>
+  </div>
+}

@@ -9,26 +9,36 @@
             placeholder="Search by title, author, or ISBN..." class="search-input" />
     </div>
 
-    <div class="results-info" *ngIf="!loading && !errorMessage">
-        <p>Showing {{ paginatedBooks.length }} of {{ filteredBooks.length }} books</p>
-    </div>
+    @if (!loading && !errorMessage) {
+        <div class="results-info">
+            <p>Showing {{ paginatedBooks.length }} of {{ filteredBooks.length }} books</p>
+        </div>
+    }
 
-    <div class="loading-message" *ngIf="loading">
-        <div class="spinner"></div>
-        <p>Loading books...</p>
-    </div>
+    @if (loading) {
+        <div class="loading-message">
+            <div class="spinner"></div>
+            <p>Loading books...</p>
+        </div>
+    }
 
-    <div class="error-message" *ngIf="errorMessage">
-        <p>{{ errorMessage }}</p>
-        <button (click)="loadBooks()" class="retry-btn">Retry</button>
-    </div>
+    @if (errorMessage) {
+        <div class="error-message">
+            <p>{{ errorMessage }}</p>
+            <button (click)="loadBooks()" class="retry-btn">Retry</button>
+        </div>
+    }
 
-    <div class="no-books-message" *ngIf="!loading && !errorMessage && filteredBooks.length === 0">
-        <p>No books found matching your search.</p>
-    </div>
+    @if (!loading && !errorMessage && filteredBooks.length === 0) {
+        <div class="no-books-message">
+            <p>No books found matching your search.</p>
+        </div>
+    }
 
-    <div class="books-grid" *ngIf="!loading && !errorMessage && paginatedBooks.length > 0">
-        <div *ngFor="let book of paginatedBooks" class="book-card" (click)="openBookDetails(book)">
+    @if (!loading && !errorMessage && paginatedBooks.length > 0) {
+        <div class="books-grid">
+            @for (book of paginatedBooks; track book.id) {
+                <div class="book-card" (click)="openBookDetails(book)">
             <div class="book-cover">
                 <img [src]="book.coverImage || 'assets/icons/books.png'" 
                      [alt]="book.title" 
@@ -55,34 +65,41 @@
                 </button>
             </div>
         </div>
-    </div>
+            }
+        </div>
+    }
 
-    <div class="pagination" *ngIf="!loading && !errorMessage && totalPages > 1">
+    @if (!loading && !errorMessage && totalPages > 1) {
+        <div class="pagination">
         <button class="page-btn" 
                 (click)="goToPage(currentPage - 1)" 
                 [disabled]="currentPage === 1">
             Previous
         </button>
 
-        <button class="page-btn" 
-                *ngFor="let page of getPageNumbers()" 
-                (click)="goToPage(page)"
-                [class.active]="page === currentPage">
-            {{ page }}
-        </button>
+        @for (page of getPageNumbers(); track page) {
+            <button class="page-btn" 
+                    (click)="goToPage(page)"
+                    [class.active]="page === currentPage">
+                {{ page }}
+            </button>
+        }
 
         <button class="page-btn" 
                 (click)="goToPage(currentPage + 1)" 
                 [disabled]="currentPage === totalPages">
             Next
         </button>
-    </div>
+        </div>
+    }
 
-    <div class="modal-overlay" *ngIf="showBookDetails" (click)="closeBookDetails()">
+    @if (showBookDetails) {
+        <div class="modal-overlay" (click)="closeBookDetails()">
         <div class="modal-content" (click)="$event.stopPropagation()">
             <button class="close-btn" (click)="closeBookDetails()">&times;</button>
             
-            <div class="modal-body" *ngIf="selectedBook">
+            @if (selectedBook) {
+                <div class="modal-body">
                 <div class="modal-image">
                     <img [src]="selectedBook.coverImage || 'assets/icons/books.png'" 
                          [alt]="selectedBook.title"
@@ -125,29 +142,37 @@
                         </span>
                     </div>
 
-                    <div class="borrow-section" *ngIf="selectedBook.availableCopies > 0">
-                        <div class="borrow-info">
-                            <p class="borrow-duration-text">
-                                <strong>Borrow Duration:</strong> 14 days
-                            </p>
+                    @if (selectedBook.availableCopies > 0) {
+                        <div class="borrow-section">
+                            <div class="borrow-info">
+                                <p class="borrow-duration-text">
+                                    <strong>Borrow Duration:</strong> 14 days
+                                </p>
+                            </div>
+
+                            <button class="borrow-btn" 
+                                    (click)="borrowBook()" 
+                                    [disabled]="borrowing || borrowSuccess !== ''">
+                                {{ borrowing ? 'Borrowing...' : 'Borrow This Book' }}
+                            </button>
                         </div>
+                    }
 
-                        <button class="borrow-btn" 
-                                (click)="borrowBook()" 
-                                [disabled]="borrowing || borrowSuccess !== ''">
-                            {{ borrowing ? 'Borrowing...' : 'Borrow This Book' }}
-                        </button>
-                    </div>
+                    @if (borrowSuccess) {
+                        <div class="success-message">
+                            <p>{{ borrowSuccess }}</p>
+                        </div>
+                    }
 
-                    <div class="success-message" *ngIf="borrowSuccess">
-                        <p>{{ borrowSuccess }}</p>
-                    </div>
-
-                    <div class="error-message-modal" *ngIf="borrowError">
-                        <p>{{ borrowError }}</p>
-                    </div>
+                    @if (borrowError) {
+                        <div class="error-message-modal">
+                            <p>{{ borrowError }}</p>
+                        </div>
+                    }
                 </div>
             </div>
+            }
         </div>
-    </div>
+        </div>
+    }
 </div>

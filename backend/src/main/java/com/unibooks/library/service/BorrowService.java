@@ -48,21 +48,18 @@ public class BorrowService {
             throw new RuntimeException("Book is not available for borrowing");
         }
 
-        // Check if user has a pending request for this book
         var existingPendingRequest = borrowRecordRepository.findActiveBookBorrowByUser(
                 user.getId(), book.getId(), BorrowStatus.PENDING);
         if (existingPendingRequest.isPresent()) {
             throw new RuntimeException("You already have a pending request for this book");
         }
 
-        // Check if user already borrowed this book
         var existingBorrow = borrowRecordRepository.findActiveBookBorrowByUser(
                 user.getId(), book.getId(), BorrowStatus.BORROWED);
         if (existingBorrow.isPresent()) {
             throw new RuntimeException("You have already borrowed this book");
         }
 
-        // Count active borrows and pending requests
         long activeBorrows = borrowRecordRepository.countByUserIdAndStatus(
                 user.getId(), BorrowStatus.BORROWED);
         long pendingRequests = borrowRecordRepository.countByUserIdAndStatus(
@@ -82,9 +79,8 @@ public class BorrowService {
             days = request.getBorrowDays();
         }
         borrowRecord.setDueDate(LocalDateTime.now().plusDays(days));
-        borrowRecord.setStatus(BorrowStatus.PENDING); // Set as PENDING instead of BORROWED
+        borrowRecord.setStatus(BorrowStatus.PENDING);
 
-        // Don't decrease available copies until approved
         BorrowRecord savedRecord = borrowRecordRepository.save(borrowRecord);
 
         return convertToResponse(savedRecord);
@@ -104,11 +100,9 @@ public class BorrowService {
             throw new RuntimeException("Book is no longer available");
         }
 
-        // Approve the request
         borrowRecord.setStatus(BorrowStatus.BORROWED);
         borrowRecord.setApprovedDate(LocalDateTime.now());
         
-        // Now decrease the available copies
         book.setAvailableCopies(book.getAvailableCopies() - 1);
         bookRepository.save(book);
 

@@ -32,25 +32,29 @@
     </div>
 
     <div class="main-content">
-      <app-admin-overview-tab 
-        *ngIf="activeTab === 'overview'" 
-        [stats]="stats">
-      </app-admin-overview-tab>
+      @if (activeTab === 'overview') {
+        <app-admin-overview-tab 
+          [stats]="stats">
+        </app-admin-overview-tab>
+      }
 
-      <app-admin-manage-books-tab 
-        *ngIf="activeTab === 'books'"
-        (bookCountUpdated)="onBookCountUpdated($event)">
-      </app-admin-manage-books-tab>
+      @if (activeTab === 'books') {
+        <app-admin-manage-books-tab 
+          (bookCountUpdated)="onBookCountUpdated($event)">
+        </app-admin-manage-books-tab>
+      }
 
-      <app-admin-manage-users-tab 
-        *ngIf="activeTab === 'users'"
-        (userCountUpdated)="onUserCountUpdated($event)">
-      </app-admin-manage-users-tab>
+      @if (activeTab === 'users') {
+        <app-admin-manage-users-tab 
+          (userCountUpdated)="onUserCountUpdated($event)">
+        </app-admin-manage-users-tab>
+      }
 
-      <app-admin-manage-librarians-tab 
-        *ngIf="activeTab === 'librarians'"
-        (librarianCountUpdated)="onLibrarianCountUpdated($event)">
-      </app-admin-manage-librarians-tab>
+      @if (activeTab === 'librarians') {
+        <app-admin-manage-librarians-tab 
+          (librarianCountUpdated)="onLibrarianCountUpdated($event)">
+        </app-admin-manage-librarians-tab>
+      }
     </div>
   </div>
 </div>

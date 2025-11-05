@@ -118,7 +118,6 @@ export class LibrarianDashboardComponent implements OnInit {
   setActiveTab(tab: string) {
     this.activeTab = tab;
     if (tab === 'requests') {
-      // Reload pending count when switching to requests tab
       this.loadPendingRequestsCount();
     }
   }

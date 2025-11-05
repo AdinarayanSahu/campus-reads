@@ -42,30 +42,40 @@
            class="search-input" />
   </div>
 
-  <!-- Loading State -->
-  <div class="loading-message" *ngIf="loading">
-    <div class="spinner"></div>
-    <p>Loading your books...</p>
-  </div>
+  @if (loading) {
+    <div class="loading-message">
+      <div class="spinner"></div>
+      <p>Loading your books...</p>
+    </div>
+  }
 
-  <!-- Error Message -->
-  <div class="error-message" *ngIf="errorMessage">
-    <p>{{ errorMessage }}</p>
-    <button (click)="loadMyBooks()" class="retry-btn">Retry</button>
-  </div>
+  @if (errorMessage) {
+    <div class="error-message">
+      <p>{{ errorMessage }}</p>
+      <button (click)="loadMyBooks()" class="retry-btn">Retry</button>
+    </div>
+  }
 
-  <!-- No Books Message -->
-  <div class="no-books-message" *ngIf="!loading && !errorMessage && filteredBorrows.length === 0">
-    <img src="assets/icons/books.png" alt="No books" class="empty-icon">
-    <h3>No books found</h3>
-    <p *ngIf="searchTerm">Try adjusting your search or filters.</p>
-    <p *ngIf="!searchTerm && activeFilter === 'all'">You haven't borrowed any books yet.</p>
-    <p *ngIf="!searchTerm && activeFilter !== 'all'">No books match this filter.</p>
-  </div>
+  @if (!loading && !errorMessage && filteredBorrows.length === 0) {
+    <div class="no-books-message">
+      <img src="assets/icons/books.png" alt="No books" class="empty-icon">
+      <h3>No books found</h3>
+      @if (searchTerm) {
+        <p>Try adjusting your search or filters.</p>
+      }
+      @if (!searchTerm && activeFilter === 'all') {
+        <p>You haven't borrowed any books yet.</p>
+      }
+      @if (!searchTerm && activeFilter !== 'all') {
+        <p>No books match this filter.</p>
+      }
+    </div>
+  }
 
-  <!-- Books List -->
-  <div class="books-list" *ngIf="!loading && !errorMessage && filteredBorrows.length > 0">
-    <div *ngFor="let borrow of filteredBorrows" class="borrow-card">
+  @if (!loading && !errorMessage && filteredBorrows.length > 0) {
+    <div class="books-list">
+      @for (borrow of filteredBorrows; track borrow.id) {
+        <div class="borrow-card">
       <div class="book-image">
         <img [src]="borrow.bookCoverImage || 'assets/icons/books.png'" 
              [alt]="borrow.bookTitle"
@@ -81,48 +91,59 @@
             <span class="label">Borrowed:</span>
             <span class="value">{{ formatDate(borrow.borrowDate) }}</span>
           </div>
-          <div class="detail-item" *ngIf="borrow.dueDate">
-            <span class="label">Due:</span>
-            <span class="value" [class.overdue]="isOverdue(borrow)">
-              {{ formatDate(borrow.dueDate) }}
-            </span>
-          </div>
-          <div class="detail-item" *ngIf="borrow.returnDate">
-            <span class="label">Returned:</span>
-            <span class="value">{{ formatDate(borrow.returnDate) }}</span>
-          </div>
+          @if (borrow.dueDate) {
+            <div class="detail-item">
+              <span class="label">Due:</span>
+              <span class="value" [class.overdue]="isOverdue(borrow)">
+                {{ formatDate(borrow.dueDate) }}
+              </span>
+            </div>
+          }
+          @if (borrow.returnDate) {
+            <div class="detail-item">
+              <span class="label">Returned:</span>
+              <span class="value">{{ formatDate(borrow.returnDate) }}</span>
+            </div>
+          }
         </div>
 
         <div class="borrow-status" [ngClass]="getStatusClass(borrow)">
           <span class="status-badge">{{ getStatusText(borrow) }}</span>
-          <ng-container *ngIf="borrow.status === 'REJECTED' && borrow.rejectionReason">
+          @if (borrow.status === 'REJECTED' && borrow.rejectionReason) {
             <div class="rejection-inline" style="margin-top:0.3rem;">
               <span class="label">Rejection Reason:</span>
               <span class="value rejection-reason">{{ borrow.rejectionReason }}</span>
             </div>
-          </ng-container>
-          <span class="days-info" *ngIf="canReturn(borrow) && !isOverdue(borrow)">
-            {{ getDaysUntilDue(borrow) }} days remaining
-          </span>
-          <span class="days-info overdue-text" *ngIf="isOverdue(borrow)">
-            {{ -getDaysUntilDue(borrow) }} days overdue
-          </span>
+          }
+          @if (canReturn(borrow) && !isOverdue(borrow)) {
+            <span class="days-info">
+              {{ getDaysUntilDue(borrow) }} days remaining
+            </span>
+          }
+          @if (isOverdue(borrow)) {
+            <span class="days-info overdue-text">
+              {{ -getDaysUntilDue(borrow) }} days overdue
+            </span>
+          }
         </div>
       </div>
 
       <div class="borrow-actions">
-        <button class="return-btn" 
-                *ngIf="canReturn(borrow)"
-                (click)="openReturnModal(borrow)">
-          Return Book
-        </button>
+        @if (canReturn(borrow)) {
+          <button class="return-btn" 
+                  (click)="openReturnModal(borrow)">
+            Return Book
+          </button>
+        }
       </div>
     </div>
-  </div>
+      }
+    </div>
+  }
 </div>
 
-<!-- Return Book Modal -->
-<div class="modal-overlay" *ngIf="showReturnModal" (click)="closeReturnModal()">
+@if (showReturnModal) {
+  <div class="modal-overlay" (click)="closeReturnModal()">
   <div class="modal-content return-modal" (click)="$event.stopPropagation()">
     <button class="close-btn" (click)="closeReturnModal()">&times;</button>
     
@@ -130,7 +151,8 @@
       <h2>Return Book</h2>
     </div>
 
-    <div class="modal-body" *ngIf="selectedBorrow">
+    @if (selectedBorrow) {
+      <div class="modal-body">
       <div class="return-book-info">
         <img [src]="selectedBorrow.bookCoverImage || 'assets/icons/books.png'" 
              [alt]="selectedBorrow.bookTitle"
@@ -148,13 +170,17 @@
         <p class="note">This action cannot be undone.</p>
       </div>
 
-      <div class="success-message" *ngIf="returnSuccess">
-        <p>{{ returnSuccess }}</p>
-      </div>
+      @if (returnSuccess) {
+        <div class="success-message">
+          <p>{{ returnSuccess }}</p>
+        </div>
+      }
 
-      <div class="error-message" *ngIf="returnError">
-        <p>{{ returnError }}</p>
-      </div>
+      @if (returnError) {
+        <div class="error-message">
+          <p>{{ returnError }}</p>
+        </div>
+      }
 
       <div class="modal-actions">
         <button class="cancel-btn" 
@@ -165,10 +191,16 @@
         <button class="confirm-btn" 
                 (click)="confirmReturn()"
                 [disabled]="returning">
-          <span *ngIf="!returning">Confirm Return</span>
-          <span *ngIf="returning">Returning...</span>
+          @if (!returning) {
+            <span>Confirm Return</span>
+          }
+          @if (returning) {
+            <span>Returning...</span>
+          }
         </button>
       </div>
     </div>
+    }
   </div>
-</div>
+  </div>
+}

@@ -69,7 +69,6 @@ public class AuthController {
     
     @PostMapping("/logout")
     public ResponseEntity<?> logout() {
-        // Clear security context
         SecurityContextHolder.clearContext();
         return ResponseEntity.ok().body(new AuthResponse("Logout successful", null, null, null, null, null, null, null));
     }
@@ -112,7 +111,6 @@ public class AuthController {
                 String email = jwtUtil.extractEmail(token);
                 String role = jwtUtil.extractRole(token);
                 
-                // Generate new token
                 String newToken = jwtUtil.generateToken(email, role);
                 AuthResponse response = new AuthResponse(
                     "Token refreshed successfully",

@@ -2,7 +2,6 @@
   width: 100%;
 }
 
-/* Error message styling for forms, similar to register page */
 .error-text {
   color: #dc3545;
   font-size: 13px;
@@ -157,7 +156,6 @@ select.invalid {
   padding: 2rem !important;
 }
 
-/* Modal Styles */
 .modal {
   display: none;
   position: fixed;

@@ -172,9 +172,7 @@ export class BrowseBooksTabComponent implements OnInit {
                 console.log('Borrow request sent successfully:', response);
                 this.borrowSuccess = `Borrow request sent for "${this.selectedBook.title}"! The librarian will review your request.`;
                 this.borrowing = false;
-                // Reload books to get updated availability counts
                 this.loadBooks();
-                // Close the modal after a short delay to show success message
                 setTimeout(() => {
                     this.closeBookDetails();
                 }, 2000);

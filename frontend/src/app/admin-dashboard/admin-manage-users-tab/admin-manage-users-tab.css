@@ -101,7 +101,6 @@ tbody tr:hover {
   color: white;
 }
 
-/* Validation error styles */
 .error-text {
   color: #dc3545;
   font-size: 13px;

@@ -32,25 +32,29 @@
     </div>
 
     <div class="main-content">
-      <app-dashboard-overview 
-        *ngIf="activeTab === 'overview'"
-        [user]="user"
-        [stats]="stats">
-      </app-dashboard-overview>
+      @if (activeTab === 'overview') {
+        <app-dashboard-overview 
+          [user]="user"
+          [stats]="stats">
+        </app-dashboard-overview>
+      }
 
-      <app-browse-books-tab 
-        *ngIf="activeTab === 'browse'">
-      </app-browse-books-tab>
+      @if (activeTab === 'browse') {
+        <app-browse-books-tab>
+        </app-browse-books-tab>
+      }
 
-      <app-my-books-tab 
-        *ngIf="activeTab === 'mybooks'"
-        [user]="user">
-      </app-my-books-tab>
+      @if (activeTab === 'mybooks') {
+        <app-my-books-tab 
+          [user]="user">
+        </app-my-books-tab>
+      }
 
-      <app-profile
-        *ngIf="activeTab === 'profile'"
-        [user]="user">
-      </app-profile>
+      @if (activeTab === 'profile') {
+        <app-profile
+          [user]="user">
+        </app-profile>
+      }
     </div>
   </div>
 </div>
