@@ -7,6 +7,8 @@ import lombok.Data;
 @Table(name = "books")
 @Data
 public class Book {
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<BorrowRecord> borrowRecords;
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
